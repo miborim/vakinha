@@ -12,8 +12,8 @@ export const campaign = {
   pix: "mirellaborimlima@gmail.com", // chave PIX (e-mail) — ajuste se necessário
   contato: {
     email: "mirellaborimlima@gmail.com",
-    instagram: "https://instagram.com/mirellainparis",
-    instagramUser: "mirellainparis",
+    instagram: "https://instagram.com/mimiaparis",
+    instagramUser: "@mimiaparis",
     linkedin: "https://www.linkedin.com/in/mirellaborim",
     linkedinNome: "Mirella Borim",
   },
