@@ -51,10 +51,22 @@ function Write-Banner([string]$title) {
 }
 
 function Format-BRL([double]$value) {
-    $rounded = [math]::Round($value)
-    $s = $rounded.ToString("N0", [System.Globalization.CultureInfo]::InvariantCulture)
-    $s = $s.Replace(",", ".")
+    $rounded = [math]::Round($value, 2)
+    $temCentavos = [math]::Round($rounded - [math]::Truncate($rounded), 2) -ne 0
+    $fmt = if ($temCentavos) { "N2" } else { "N0" }
+    $s = $rounded.ToString($fmt, [System.Globalization.CultureInfo]::InvariantCulture)
+    # InvariantCulture usa "," para milhar e "." para decimal; trocamos para o padrao pt-BR (1.234,56)
+    $s = $s.Replace(",", "§").Replace(".", ",").Replace("§", ".")
     return "R`$ $s"
+}
+
+function Format-NumeroJs([double]$value) {
+    # Escreve o numero no formato aceito por JS (ponto como separador decimal, sem milhar)
+    $rounded = [math]::Round($value, 2)
+    if ($rounded -eq [math]::Truncate($rounded)) {
+        return [string][int64]$rounded
+    }
+    return $rounded.ToString("0.##", [System.Globalization.CultureInfo]::InvariantCulture)
 }
 
 function Get-Percent([double]$value, [double]$meta) {
@@ -85,17 +97,53 @@ function Test-CancelWord([string]$raw) {
     return $raw.Trim().ToLower() -in @("sair", "cancelar", "exit", "quit")
 }
 
+function Read-LineCancelable {
+    # Em modo interativo real, permite cancelar a qualquer momento apertando ESC.
+    # Quando a entrada vem redirecionada/piped (ex.: testes automatizados), cai
+    # no Read-Host normal, onde digitar 'sair'/'cancelar'/'exit'/'quit' cancela.
+    if ([Console]::IsInputRedirected) {
+        $line = Read-Host
+        if (Test-CancelWord $line) { throw [System.Exception]::new("CANCELLED") }
+        return $line
+    }
+
+    $buffer = New-Object System.Text.StringBuilder
+    while ($true) {
+        $key = [Console]::ReadKey($true)
+        if ($key.Key -eq [ConsoleKey]::Escape) {
+            Write-Host ""
+            throw [System.Exception]::new("CANCELLED")
+        }
+        if ($key.Key -eq [ConsoleKey]::Enter) {
+            Write-Host ""
+            $result = $buffer.ToString()
+            if (Test-CancelWord $result) { throw [System.Exception]::new("CANCELLED") }
+            return $result
+        }
+        if ($key.Key -eq [ConsoleKey]::Backspace) {
+            if ($buffer.Length -gt 0) {
+                $buffer.Length = $buffer.Length - 1
+                Write-Host "`b `b" -NoNewline
+            }
+            continue
+        }
+        if (-not [char]::IsControl($key.KeyChar)) {
+            [void]$buffer.Append($key.KeyChar)
+            Write-Host $key.KeyChar -NoNewline
+        }
+    }
+}
+
 function Read-YesNo([string]$question, [bool]$defaultYes = $true) {
     $suffix = if ($defaultYes) { "[S/n]" } else { "[s/N]" }
     while ($true) {
         Write-Host "  $question $suffix " -NoNewline -ForegroundColor Yellow
-        $resp = Read-Host
-        if (Test-CancelWord $resp) { throw [System.Exception]::new("CANCELLED") }
+        $resp = Read-LineCancelable
         if ([string]::IsNullOrWhiteSpace($resp)) { return $defaultYes }
         $r = $resp.Trim().ToLower()
         if ($r -in @("s", "sim", "y", "yes")) { return $true }
         if ($r -in @("n", "nao", "não", "no")) { return $false }
-        Write-Host "  Nao entendi. Responda com S ou N." -ForegroundColor Red
+        Write-Host "  Nao entendi. Responda com S ou N (ou ESC/'sair' para cancelar)." -ForegroundColor Red
     }
 }
 
@@ -103,12 +151,37 @@ function Convert-ToAmount([string]$raw) {
     $raw = $raw.Trim()
     if ($raw -eq "") { return $null }
     $raw = $raw -replace "[Rr]\$", "" -replace "\s", ""
-    if ($raw -match "," -and $raw -match "\.") {
-        $raw = $raw -replace "\.", ""
-        $raw = $raw -replace ",", "."
-    } elseif ($raw -match ",") {
-        $raw = $raw -replace ",", "."
+    if ($raw -eq "") { return $null }
+
+    $hasComma = $raw.Contains(",")
+    $hasDot   = $raw.Contains(".")
+
+    if ($hasComma -and $hasDot) {
+        # Os dois separadores aparecem: o ultimo a aparecer e o decimal.
+        # Ex.: "1.234,56" (decimal = ,) ou "1,234.56" (decimal = .)
+        if ($raw.LastIndexOf(",") -gt $raw.LastIndexOf(".")) {
+            $raw = $raw.Replace(".", "").Replace(",", ".")
+        } else {
+            $raw = $raw.Replace(",", "")
+        }
+    } elseif ($hasComma) {
+        $depoisDaVirgula = ($raw -split ",")[-1]
+        if ($depoisDaVirgula.Length -eq 3) {
+            # Ex.: "1,500" -> separador de milhar -> 1500
+            $raw = $raw.Replace(",", "")
+        } else {
+            # Ex.: "100,50" -> separador decimal -> 100.50
+            $raw = $raw.Replace(",", ".")
+        }
+    } elseif ($hasDot) {
+        $depoisDoPonto = ($raw -split "\.")[-1]
+        if ($depoisDoPonto.Length -eq 3) {
+            # Ex.: "1.500" -> separador de milhar -> 1500
+            $raw = $raw.Replace(".", "")
+        }
+        # Senao (ex.: "100.50"), mantem o ponto como separador decimal.
     }
+
     $value = 0.0
     $ok = [double]::TryParse(
         $raw,
@@ -116,18 +189,17 @@ function Convert-ToAmount([string]$raw) {
         [System.Globalization.CultureInfo]::InvariantCulture,
         [ref]$value
     )
-    if ($ok) { return $value }
+    if ($ok) { return [math]::Round($value, 2) }
     return $null
 }
 
 function Read-PositiveAmount([string]$question) {
     while ($true) {
         Write-Host "  $question " -NoNewline -ForegroundColor Yellow
-        $raw = Read-Host
-        if (Test-CancelWord $raw) { throw [System.Exception]::new("CANCELLED") }
+        $raw = Read-LineCancelable
         $val = Convert-ToAmount $raw
         if ($null -eq $val -or $val -le 0) {
-            Write-Host "  Valor invalido. Digite um numero maior que zero (ou 'sair' para cancelar)." -ForegroundColor Red
+            Write-Host "  Valor invalido. Digite um numero maior que zero (ex.: 100 ou 100,50) ou ESC/'sair' para cancelar." -ForegroundColor Red
             continue
         }
         return $val
@@ -181,7 +253,7 @@ function Get-CampaignData([string]$path) {
 }
 
 function Get-UpdatedCampaignContent([string]$content, [double]$novoValor, [string]$novaData) {
-    $novoValorStr = [string]([math]::Round($novoValor))
+    $novoValorStr = Format-NumeroJs $novoValor
     $result = [regex]::Replace($content, "(?<=arrecadado:\s*)[0-9]+(?:\.[0-9]+)?", { $novoValorStr })
     $result = [regex]::Replace($result, '(?<=atualizadoEm:\s*")[^"]*(?=")', { $novaData })
     return $result
@@ -203,6 +275,8 @@ Write-Rule "DarkYellow"
 if ($DryRun) {
     Write-Host "   (MODO TESTE: nada sera salvo, commitado ou publicado)" -ForegroundColor DarkGray
 }
+Write-Host ""
+Write-Host "   Dica: aperte ESC (ou digite 'sair') a qualquer momento para cancelar tudo sem salvar nada." -ForegroundColor DarkGray
 
 $originalGhUser  = $null
 $switchedAccount = $false
@@ -273,8 +347,7 @@ try {
             Write-Host ("   [2] Editar o ultimo valor adicionado (" + (Format-BRL $entries[$entries.Count - 1]) + ")")
             Write-Host "   [3] Finalizar e revisar"
             Write-Host "  Escolha (1/2/3): " -NoNewline -ForegroundColor Yellow
-            $choice = Read-Host
-            if (Test-CancelWord $choice) { throw [System.Exception]::new("CANCELLED") }
+            $choice = Read-LineCancelable
 
             switch ($choice.Trim()) {
                 "1" {
@@ -289,9 +362,9 @@ try {
             }
         }
 
-        $soma = ($entries | Measure-Object -Sum).Sum
+        $soma = [math]::Round((($entries | Measure-Object -Sum).Sum), 2)
         $valorAntigo = $data.Arrecadado
-        $valorNovo = $valorAntigo + $soma
+        $valorNovo = [math]::Round($valorAntigo + $soma, 2)
 
         Write-Banner "Confirmacao final"
         Write-Host ""
@@ -325,7 +398,7 @@ try {
             Write-Host ""
             Write-Host ("Aviso: o valor no repositorio mudou para " + (Format-BRL $freshData.Arrecadado) + " desde o inicio desta sessao. Recalculando...") -ForegroundColor Yellow
             $valorAntigo = $freshData.Arrecadado
-            $valorNovo = $valorAntigo + $soma
+            $valorNovo = [math]::Round($valorAntigo + $soma, 2)
         }
 
         $novoContent = Get-UpdatedCampaignContent $freshData.Content $valorNovo $novaData
