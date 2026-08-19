@@ -1,5 +1,6 @@
 import "./Footer.css";
 import { campaign } from "../data/campaign";
+import { withBase } from "../utils/paths";
 
 const { contato } = campaign;
 
@@ -9,7 +10,7 @@ export default function Footer() {
       <div className="footer__band-wrap">
         <img
           className="footer__band"
-          src="/footer/footer-band.webp"
+          src={withBase("/footer/footer-band.webp")}
           alt=""
           aria-hidden="true"
         />

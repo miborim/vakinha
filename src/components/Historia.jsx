@@ -1,11 +1,12 @@
 import "./Historia.css";
+import { withBase } from "../utils/paths";
 
-const B = "/historia-pessoal";
+const B = withBase("/historia-pessoal");
 
 const entradas = [
   {
     ano: "2024",
-    logo: "/logos/inteli-logo-preta.webp",
+    logo: withBase("/logos/inteli-logo-preta.webp"),
     logoCls: "is-inteli",
     data: "janeiro/2024 a dezembro/2027",
     desc: "Sistemas de Informação, Negócios e Liderança",
@@ -43,7 +44,7 @@ const entradas = [
     desc: "Estágio de negócios em Sucesso do Cliente",
   },
   {
-    logo: "/logos/logo-ece.svg",
+    logo: withBase("/logos/logo-ece.svg"),
     logoCls: "is-ece",
     data: "outubro a dezembro/2026",
     desc: 'Mestrado em "AI for Business Transformation"',

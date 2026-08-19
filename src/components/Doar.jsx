@@ -2,8 +2,9 @@ import { useState, useCallback } from "react";
 import "./Doar.css";
 import { campaign } from "../data/campaign";
 import ProgressBar from "./ProgressBar";
+import { withBase } from "../utils/paths";
 
-const B = "/faca-parte";
+const B = withBase("/faca-parte");
 
 export default function Doar() {
   const [copiado, setCopiado] = useState(false);
