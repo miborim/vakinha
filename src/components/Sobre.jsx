@@ -1,6 +1,7 @@
 import "./Sobre.css";
+import { withBase } from "../utils/paths";
 
-const B = "/sobre-intercambio";
+const B = withBase("/sobre-intercambio");
 
 const custos = [
   { src: `${B}/sobre-eating.webp`, label: "1. Alimentação", cls: "sobre__custo--eating" },

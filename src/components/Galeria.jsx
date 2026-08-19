@@ -1,7 +1,8 @@
 import { useState, useCallback } from "react";
 import "./Galeria.css";
+import { withBase } from "../utils/paths";
 
-const G = "/galeria";
+const G = withBase("/galeria");
 
 const montes = [
   {
