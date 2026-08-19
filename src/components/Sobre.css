@@ -1,0 +1,171 @@
+.sobre {
+  position: relative;
+  overflow: visible;
+  background: var(--fundo);
+  padding: 0 0 40px;
+}
+
+/* Faixa rasgada (bandeira) — 30% menor, centralizada e sobreposta à Hero (transição) */
+.sobre__flag-band {
+  position: absolute;
+  top: clamp(-58px, -3.4vw, -32px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: auto;
+  z-index: 3;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ---------- Conteúdo central ---------- */
+.sobre__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: clamp(80px, 9vw, 140px) 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.sobre__titulo-img {
+  width: clamp(180px, 22vw, 255px);
+  height: auto;
+  margin-bottom: 12px;
+}
+
+.sobre__texto {
+  max-width: 720px;
+  margin: 0 auto;
+  font-family: var(--fonte-mono);
+  font-size: clamp(0.82rem, 1.05vw, 1rem);
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  color: var(--tinta);
+}
+
+.sobre__mestrado {
+  font-weight: 700;
+}
+
+/* ---------- Categorias de custo ---------- */
+.sobre__custos {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1000px;
+  margin: clamp(24px, 4vw, 44px) auto 0;
+  padding: 0 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(16px, 3.2vw, 44px);
+  flex-wrap: wrap;
+}
+
+.sobre__custo {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.sobre__custo img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(2px 4px 5px rgba(60, 45, 25, 0.14));
+}
+
+.sobre__custo figcaption {
+  font-family: var(--fonte-mono);
+  font-size: clamp(0.8rem, 1vw, 0.95rem);
+  color: var(--tinta);
+  letter-spacing: 0.01em;
+}
+
+/* Larguras individuais (aspectos diferentes) */
+.sobre__custo--eating {
+  width: clamp(120px, 14vw, 190px);
+}
+.sobre__custo--housing {
+  width: clamp(92px, 10vw, 138px);
+}
+.sobre__custo--traveling {
+  width: clamp(84px, 9.5vw, 126px);
+}
+.sobre__custo--other {
+  width: clamp(135px, 15.5vw, 208px);
+}
+
+/* ---------- Enfeites posicionados ---------- */
+.sobre__deco {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  user-select: none;
+  height: auto;
+}
+
+.sobre__star {
+  top: clamp(78px, 8.5vw, 125px);
+  left: clamp(20px, 3.5vw, 64px);
+  width: clamp(72px, 6.6vw, 104px);
+  transform: rotate(-6deg);
+}
+
+.sobre__letter {
+  top: clamp(170px, 16vw, 235px);
+  left: clamp(2px, 1.2vw, 20px);
+  width: clamp(160px, 18vw, 235px);
+}
+
+.sobre__painting {
+  top: clamp(120px, 12vw, 175px);
+  right: clamp(10px, 3vw, 52px);
+  width: clamp(125px, 15vw, 195px);
+}
+
+.sobre__trophy {
+  top: clamp(240px, 25vw, 345px);
+  right: clamp(16px, 6vw, 95px);
+  width: clamp(66px, 7vw, 98px);
+}
+
+/* ---------- Tablet / mobile ---------- */
+@media (max-width: 960px) {
+  .sobre__deco {
+    display: none;
+  }
+
+  .sobre__inner {
+    padding-top: clamp(56px, 15vw, 96px);
+  }
+
+  .sobre__custos {
+    gap: 28px 24px;
+  }
+
+  .sobre__custo--eating {
+    width: min(240px, 44%);
+  }
+  .sobre__custo--housing {
+    width: min(160px, 34%);
+  }
+  .sobre__custo--traveling {
+    width: min(150px, 32%);
+  }
+  .sobre__custo--other {
+    width: min(260px, 46%);
+  }
+}
+
+@media (max-width: 860px) {
+  .sobre__flag-band {
+    display: none;
+  }
+}

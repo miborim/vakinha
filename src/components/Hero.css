@@ -1,0 +1,181 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--fundo);
+  min-height: calc(100vh - 74px);
+}
+
+/* ---------- Colagem de fundo (tela inteira) ---------- */
+.hero__collage {
+  display: block;
+}
+
+.hero__collage--desktop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left center;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero__collage--mobile {
+  display: none;
+}
+
+/* ---------- Conteúdo sobre a parte branca (direita) ---------- */
+.hero__right {
+  position: relative;
+  z-index: 2;
+  margin-left: auto;
+  width: min(50%, 660px);
+  min-height: calc(100vh - 74px);
+  padding: 18px clamp(40px, 6vw, 96px) 24px clamp(16px, 2vw, 40px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.hero__prazer {
+  width: min(290px, 72%);
+  height: auto;
+  transform: rotate(-3deg);
+  filter: drop-shadow(2px 3px 3px rgba(60, 45, 25, 0.18));
+}
+
+.hero__enchantee {
+  align-self: flex-end;
+  margin: -16px clamp(10px, 6%, 40px) 0 0;
+  width: clamp(120px, 15vw, 175px);
+  height: auto;
+  transform: rotate(-4deg);
+}
+
+.hero__polaroid {
+  width: min(180px, 46%);
+  height: auto;
+  transform: rotate(2.5deg);
+  filter: drop-shadow(4px 6px 8px rgba(60, 45, 25, 0.22));
+}
+
+.hero__intro {
+  max-width: 580px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+.hero__paragrafo {
+  margin: 0;
+  font-family: var(--fonte-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  color: var(--tinta);
+}
+
+.hero__paragrafo strong {
+  font-weight: 700;
+}
+
+.hero__existe {
+  margin: 0 auto;
+  font-family: var(--fonte-bimbo);
+  font-size: 1.55rem;
+  line-height: 1.15;
+  color: var(--tinta);
+  transform: rotate(0deg);
+}
+
+.hero__existe-bang {
+  font-family: var(--fonte-mao);
+  font-weight: 700;
+  margin-left: 1px;
+}
+
+.hero__acoes {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.hero__btn {
+  display: inline-flex;
+  transition: transform 0.18s ease, filter 0.18s ease;
+  filter: drop-shadow(2px 3px 3px rgba(60, 45, 25, 0.2));
+}
+
+.hero__btn img {
+  height: 50px;
+  width: auto;
+  display: block;
+}
+
+.hero__btn:hover {
+  transform: translateY(-3px) rotate(-1.5deg);
+}
+
+/* ---------- Ilustração Amélie (canto inferior direito) ---------- */
+.hero__amelie {
+  position: absolute;
+  right: clamp(6px, 2vw, 40px);
+  bottom: 0;
+  width: clamp(96px, 12vw, 180px);
+  height: auto;
+  z-index: 3;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 860px) {
+  .hero {
+    min-height: 0;
+  }
+
+  .hero__collage--desktop {
+    display: none;
+  }
+
+  .hero__collage--mobile {
+    display: block;
+    width: 100%;
+    height: auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero__right {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    margin-left: 0;
+    align-items: center;
+    text-align: center;
+    padding: 32px 20px 92px;
+    gap: 20px;
+  }
+
+  .hero__prazer {
+    width: min(280px, 72%);
+  }
+
+  .hero__polaroid {
+    width: min(260px, 66%);
+  }
+
+  .hero__amelie {
+    width: 82px;
+    right: 4px;
+  }
+}

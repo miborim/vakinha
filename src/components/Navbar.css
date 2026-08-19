@@ -1,0 +1,109 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-image: url("/header/header-background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-bottom: 1px solid rgba(120, 100, 70, 0.18);
+  box-shadow: 0 2px 10px rgba(90, 70, 40, 0.08);
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 74px;
+}
+
+.navbar__logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.navbar__logo img {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+
+.navbar__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 2px;
+  transition: transform 0.18s ease;
+}
+
+.navbar__word {
+  height: 32px;
+  width: auto;
+  display: block;
+}
+
+.navbar__word[src*="minhahistoria"] {
+  height: 27px;
+}
+
+.navbar__link--cta .navbar__word {
+  height: 36px;
+}
+
+.navbar__link:hover {
+  transform: translateY(-2px) rotate(-1.5deg);
+}
+
+/* Coração de hover — só aparece ao passar o mouse na palavra */
+.navbar__heart {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  width: 20px;
+  height: auto;
+  opacity: 0;
+  transform: scale(0.5) rotate(-12deg);
+  transform-origin: bottom left;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.navbar__link:hover .navbar__heart,
+.navbar__link:focus-visible .navbar__heart {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+@media (max-width: 720px) {
+  .navbar__inner {
+    min-height: 62px;
+  }
+
+  .navbar__logo img {
+    height: 30px;
+  }
+
+  .navbar__links {
+    gap: 18px;
+  }
+
+  .navbar__link:not(.navbar__link--cta) {
+    display: none;
+  }
+
+  .navbar__word {
+    height: 28px;
+  }
+
+  .navbar__link--cta .navbar__word {
+    height: 32px;
+  }
+}

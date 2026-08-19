@@ -1,0 +1,243 @@
+@font-face {
+  font-family: "Bimbo";
+  src: url("/fonts/bimbo.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Paleta scrapbook / vintage */
+  --creme: #ece4d3;
+  --creme-claro: #f4efe4;
+  --fundo: #fafafa;
+  --papel: #fbf8ef;
+  --papel-sombra: rgba(60, 45, 25, 0.18);
+  --tinta: #2f2b25;
+  --tinta-suave: #4a453c;
+
+  /* Acentos (bandeira da França + verde da Mirella + ransom) */
+  --verde: #076e79;
+  --verde-escuro: #05545c;
+  --azul-fr: #2f4b7c;
+  --vermelho-fr: #c0392b;
+  --vinho: #8f3b47;
+  --mostarda: #d9a441;
+  --rosa: #d98cae;
+
+  --sombra: 0 8px 22px rgba(60, 45, 25, 0.16);
+  --sombra-forte: 0 12px 30px rgba(60, 45, 25, 0.28);
+  --max-width: 1120px;
+
+  --fonte-corpo: "EB Garamond", Georgia, "Times New Roman", serif;
+  --fonte-mao: "Caveat", "Segoe Script", cursive;
+  --fonte-maquina: "Special Elite", "Courier New", monospace;
+  --fonte-mono: "Space Mono", "Courier New", monospace;
+  --fonte-bimbo: "Bimbo", "Caveat", "Segoe Script", cursive;
+
+  font-family: var(--fonte-corpo);
+  color: var(--tinta);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: var(--tinta);
+  line-height: 1.65;
+  font-size: 1.08rem;
+  background-color: var(--fundo);
+}
+
+h1, h2, h3 {
+  line-height: 1.15;
+  margin: 0 0 0.5em;
+}
+
+a {
+  color: var(--vinho);
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+main {
+  overflow-x: clip;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section {
+  position: relative;
+  padding: 88px 0;
+  overflow: hidden;
+}
+
+.section--alt {
+  background: var(--fundo);
+}
+
+.section__titulo {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.section__subtitulo {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 52px;
+  font-size: 1.15rem;
+  color: var(--tinta-suave);
+}
+
+/* ---------- Botões ---------- */
+.btn {
+  display: inline-block;
+  font-family: var(--fonte-maquina);
+  background: var(--verde);
+  color: #fff;
+  padding: 13px 30px;
+  border: 2px solid var(--tinta);
+  border-radius: 2px;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--tinta);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--tinta);
+  color: #fff;
+}
+
+.btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--tinta);
+}
+
+.btn--outline {
+  background: var(--creme-claro);
+  color: var(--tinta);
+}
+
+/* ---------- Papel colado / scrapbook ---------- */
+.paper {
+  position: relative;
+  background: var(--papel);
+  padding: 28px 26px;
+  box-shadow: var(--sombra);
+  border-radius: 2px;
+}
+
+.paper::after {
+  /* sombra irregular imitando papel levantado */
+  content: "";
+  position: absolute;
+  inset: auto 6px -6px 6px;
+  height: 12px;
+  background: rgba(60, 45, 25, 0.12);
+  filter: blur(6px);
+  z-index: -1;
+}
+
+.tilt-l { transform: rotate(-2deg); }
+.tilt-r { transform: rotate(2deg); }
+.tilt-l2 { transform: rotate(-1deg); }
+.tilt-r2 { transform: rotate(1.4deg); }
+
+/* Fita adesiva (washi tape) */
+.tape {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  width: 118px;
+  height: 30px;
+  transform: translateX(-50%) rotate(-3deg);
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(217, 164, 65, 0.55),
+    rgba(217, 164, 65, 0.55) 8px,
+    rgba(192, 57, 43, 0.35) 8px,
+    rgba(192, 57, 43, 0.35) 16px
+  );
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+  z-index: 2;
+}
+
+.tape--left {
+  left: 26px;
+  transform: rotate(-24deg);
+}
+
+.tape--right {
+  left: auto;
+  right: 26px;
+  transform: rotate(20deg);
+}
+
+/* ---------- Stickers ---------- */
+.sticker {
+  position: absolute;
+  pointer-events: none;
+  filter: drop-shadow(2px 3px 2px rgba(60, 45, 25, 0.3));
+  z-index: 3;
+  user-select: none;
+}
+
+/* ---------- Letras recortadas (ransom note) para títulos ---------- */
+.ransom {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px 5px;
+  font-family: var(--fonte-maquina);
+  font-size: clamp(1.7rem, 4.5vw, 2.6rem);
+  line-height: 1;
+}
+
+.ransom__space {
+  width: 0.4em;
+}
+
+.ransom__ch {
+  display: inline-block;
+  padding: 4px 8px;
+  color: #fff;
+  box-shadow: 1px 2px 3px rgba(60, 45, 25, 0.25);
+  border-radius: 2px;
+}
+
+.ransom__ch--0 { background: var(--vinho); transform: rotate(-4deg); }
+.ransom__ch--1 { background: var(--azul-fr); transform: rotate(3deg); }
+.ransom__ch--2 { background: var(--mostarda); color: var(--tinta); transform: rotate(-2deg); }
+.ransom__ch--3 { background: var(--vermelho-fr); transform: rotate(4deg); }
+.ransom__ch--4 { background: var(--verde); transform: rotate(-3deg); }
+.ransom__ch--5 { background: var(--rosa); color: var(--tinta); transform: rotate(2deg); }
+
+@media (max-width: 640px) {
+  .section {
+    padding: 60px 0;
+  }
+  body {
+    font-size: 1.02rem;
+  }
+  /* Esconde stickers puramente decorativos no mobile para não poluir */
+  .sticker--deco {
+    display: none;
+  }
+}

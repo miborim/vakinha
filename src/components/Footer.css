@@ -1,0 +1,78 @@
+.footer {
+  position: relative;
+  background: var(--fundo);
+}
+
+.footer__band-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.footer__band {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Contatos sobre a parte esquerda da faixa (desktop/tablet) */
+.footer__contatos {
+  position: absolute;
+  left: clamp(24px, 4vw, 72px);
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.9vw, 12px);
+  z-index: 2;
+}
+
+.footer__contato {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(7px, 0.9vw, 11px);
+  font-family: var(--fonte-maquina);
+  font-size: clamp(0.62rem, 1.05vw, 0.95rem);
+  color: var(--tinta);
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.footer__contato:hover {
+  color: var(--vinho);
+  transform: translateX(2px);
+}
+
+.footer__icone {
+  width: clamp(15px, 1.5vw, 20px);
+  height: clamp(15px, 1.5vw, 20px);
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- Mobile: empilha contatos sobre a faixa ---------- */
+@media (max-width: 680px) {
+  .footer__band-wrap {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .footer__contatos {
+    position: static;
+    transform: none;
+    order: -1;
+    align-items: center;
+    gap: 10px;
+    padding: 22px 20px 6px;
+  }
+
+  .footer__contato {
+    font-size: 0.8rem;
+  }
+}

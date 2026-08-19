@@ -1,0 +1,265 @@
+.historia {
+  position: relative;
+  overflow: hidden;
+  background: var(--fundo);
+  padding: 40px 0 56px;
+}
+
+.historia__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.historia__titulo {
+  display: block;
+  width: clamp(230px, 30vw, 360px);
+  height: auto;
+  margin: 0 auto 18px;
+}
+
+/* ---------- Linha do tempo (reta) ---------- */
+.historia__timeline {
+  --yr: clamp(120px, 15vw, 178px);
+  --gap: clamp(30px, 5vw, 58px);
+  --linha: calc(var(--yr) + var(--gap) / 2);
+  position: relative;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.historia__line {
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: var(--linha);
+  width: 0;
+  border-left: 3px dashed #e5289a;
+  pointer-events: none;
+}
+
+.historia__entry {
+  display: grid;
+  grid-template-columns: var(--yr) 1fr;
+  column-gap: var(--gap);
+  align-items: center;
+  position: relative;
+  padding: clamp(14px, 2.1vw, 24px) 0;
+}
+
+/* nó (bolinha) sobre a linha */
+.historia__entry::before {
+  content: "";
+  position: absolute;
+  left: var(--linha);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #e5289a;
+  border: 2.5px solid var(--papel);
+  z-index: 2;
+}
+
+.historia__year {
+  justify-self: end;
+  align-self: center;
+}
+
+.historia__year img {
+  height: clamp(36px, 4.6vw, 56px);
+  width: auto;
+  display: block;
+}
+
+.historia__content {
+  min-width: 0;
+}
+
+.historia__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 5px;
+}
+
+.historia__logo {
+  height: clamp(18px, 2vw, 26px);
+  width: auto;
+  display: block;
+}
+
+/* Ajustes por logo (proporções bem diferentes) */
+.is-inteli .historia__logo { height: clamp(24px, 2.6vw, 34px); }
+.is-inteli-jr .historia__logo { height: clamp(28px, 3.2vw, 44px); }
+.is-morgan .historia__logo { height: clamp(13px, 1.4vw, 19px); }
+.is-ambev .historia__logo { height: clamp(15px, 1.6vw, 22px); }
+.is-elogroup .historia__logo { height: clamp(14px, 1.5vw, 21px); }
+.is-microsoft .historia__logo { height: clamp(17px, 1.8vw, 24px); }
+.is-ece .historia__logo { height: clamp(26px, 2.8vw, 38px); }
+
+.historia__data {
+  font-family: var(--fonte-mono);
+  font-size: clamp(0.62rem, 0.8vw, 0.72rem);
+  letter-spacing: 0.02em;
+  color: var(--tinta-suave);
+  white-space: nowrap;
+}
+
+.historia__desc {
+  margin: 0;
+  font-family: var(--fonte-mono);
+  font-size: clamp(0.72rem, 0.92vw, 0.88rem);
+  line-height: 1.4;
+  color: var(--tinta);
+  white-space: nowrap;
+}
+
+/* ---------- Bloco bolsista ---------- */
+.historia__bolsista {
+  position: relative;
+  z-index: 2;
+  max-width: 680px;
+  margin: clamp(56px, 8vw, 104px) auto 0;
+  text-align: center;
+}
+
+.historia__note {
+  position: absolute;
+  top: clamp(-72px, -6vw, -44px);
+  left: clamp(-24px, -1vw, 24px);
+  width: clamp(220px, 27vw, 316px);
+  height: auto;
+  transform: rotate(-6deg);
+  z-index: 3;
+  filter: drop-shadow(2px 4px 6px rgba(60, 45, 25, 0.18));
+}
+
+.historia__ngos {
+  width: clamp(300px, 46vw, 470px);
+  height: auto;
+  display: block;
+  margin: 0 auto 16px;
+}
+
+.historia__bolsista-txt {
+  margin: 0 auto;
+  max-width: 520px;
+  font-family: var(--fonte-mono);
+  font-size: clamp(0.74rem, 0.95vw, 0.9rem);
+  line-height: 1.5;
+  color: var(--tinta);
+}
+
+/* ---------- Enfeites (colagem) ---------- */
+.historia__deco {
+  position: absolute;
+  z-index: 1;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+.historia__paper-l {
+  top: 0;
+  left: 0;
+  width: clamp(170px, 20vw, 300px);
+}
+
+.historia__paper-r {
+  top: 0;
+  right: 0;
+  width: clamp(150px, 18vw, 280px);
+}
+
+.historia__heart {
+  top: clamp(96px, 11vw, 150px);
+  right: clamp(70px, 10vw, 150px);
+  width: clamp(64px, 7.5vw, 100px);
+}
+
+.historia__polaroid-l {
+  top: clamp(250px, 26vw, 380px);
+  left: clamp(6px, 3vw, 56px);
+  width: clamp(150px, 16vw, 210px);
+  transform: rotate(-8deg);
+  filter: drop-shadow(3px 5px 7px rgba(60, 45, 25, 0.22));
+}
+
+.historia__stickers-l {
+  top: clamp(430px, 45vw, 600px);
+  left: clamp(24px, 5vw, 90px);
+  width: clamp(110px, 12vw, 160px);
+}
+
+.historia__polaroid-r {
+  top: clamp(180px, 18vw, 250px);
+  right: clamp(4px, 2vw, 44px);
+  width: clamp(150px, 15vw, 200px);
+  transform: rotate(4deg);
+  filter: drop-shadow(3px 5px 7px rgba(60, 45, 25, 0.2));
+}
+
+.historia__flower {
+  top: clamp(560px, 56vw, 780px);
+  right: clamp(40px, 8vw, 140px);
+  width: clamp(84px, 9vw, 130px);
+}
+
+/* ---------- Tablet / mobile ---------- */
+@media (max-width: 960px) {
+  .historia__deco {
+    display: none;
+  }
+
+  .historia__timeline {
+    max-width: 100%;
+    padding-left: 24px;
+    border-left: 3px dashed #e5289a;
+    margin-left: 8px;
+  }
+
+  .historia__line {
+    display: none;
+  }
+
+  .historia__entry {
+    display: block;
+    position: relative;
+    padding: 14px 0;
+  }
+
+  .historia__entry::before {
+    left: -24px;
+    top: 22px;
+    transform: translate(-50%, -50%);
+  }
+
+  .historia__year {
+    justify-self: auto;
+    margin-bottom: 8px;
+  }
+
+  .historia__year img {
+    height: 42px;
+  }
+
+  .historia__desc {
+    white-space: normal;
+  }
+
+  .historia__bolsista {
+    margin-top: 40px;
+  }
+
+  .historia__note {
+    position: static;
+    width: clamp(230px, 60vw, 320px);
+    margin: 0 auto 14px;
+    left: auto;
+    top: auto;
+  }
+}
