@@ -74,11 +74,50 @@
   gap: 10px;
 }
 
+.sobre__custo-imgwrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .sobre__custo img {
   width: 100%;
   height: auto;
   display: block;
   filter: drop-shadow(2px 4px 5px rgba(60, 45, 25, 0.14));
+}
+
+.sobre__info-btn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--tinta);
+  background: var(--mostarda);
+  color: var(--tinta);
+  font-family: var(--fonte-maquina);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--tinta);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.sobre__info-btn:hover {
+  background: var(--rosa);
+  transform: scale(1.1) rotate(-6deg);
+}
+
+.sobre__info-btn:focus-visible {
+  outline: 2px solid var(--verde);
+  outline-offset: 2px;
 }
 
 .sobre__custo figcaption {
@@ -136,6 +175,164 @@
   width: clamp(66px, 7vw, 98px);
 }
 
+/* ---------- Modal de detalhes do orçamento ---------- */
+.sobre__modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(47, 43, 37, 0.55);
+  animation: sobreModalFade 0.2s ease;
+}
+
+.sobre__modal-box {
+  position: relative;
+  width: min(480px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--papel);
+  border: 2px solid var(--tinta);
+  border-radius: 6px;
+  box-shadow: 6px 6px 0 var(--tinta);
+  padding: 30px 28px 24px;
+  text-align: left;
+  animation: sobreModalPop 0.25s ease;
+}
+
+.sobre__modal-fechar {
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--tinta);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sobre__modal-titulo {
+  margin: 0 0 2px;
+  font-family: var(--fonte-bimbo);
+  font-size: 1.7rem;
+  color: var(--vinho);
+}
+
+.sobre__modal-subtitulo {
+  margin: 0 0 16px;
+  font-family: var(--fonte-mono);
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+.sobre__modal-itens {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sobre__modal-itens li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  font-family: var(--fonte-mono);
+  font-size: 0.85rem;
+  background: var(--creme-claro);
+  border-radius: 3px;
+}
+
+.sobre__modal-itens li.is-destaque {
+  background: rgba(7, 110, 121, 0.12);
+  font-weight: 700;
+}
+
+.sobre__modal-item-label {
+  color: var(--tinta-suave);
+}
+
+.sobre__modal-itens li.is-destaque .sobre__modal-item-label {
+  color: var(--tinta);
+}
+
+.sobre__modal-item-valor {
+  flex-shrink: 0;
+  color: var(--verde-escuro);
+  font-weight: 700;
+  text-align: right;
+}
+
+.sobre__modal-resumo {
+  margin: 0 0 16px;
+  padding-top: 16px;
+  border-top: 2px dashed var(--mostarda);
+}
+
+.sobre__modal-resumo h4 {
+  margin: 0 0 10px;
+  font-family: var(--fonte-maquina);
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  color: var(--tinta);
+}
+
+.sobre__modal-resumo table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--fonte-mono);
+  font-size: 0.8rem;
+}
+
+.sobre__modal-resumo td {
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(47, 43, 37, 0.12);
+  color: var(--tinta-suave);
+}
+
+.sobre__modal-resumo td:last-child {
+  text-align: right;
+  color: var(--tinta);
+}
+
+.sobre__modal-resumo tr.is-total td {
+  border-top: 2px solid var(--tinta);
+  border-bottom: none;
+  padding-top: 10px;
+  font-weight: 700;
+  color: var(--vinho);
+}
+
+.sobre__modal-resumo tr.is-media td {
+  border-bottom: none;
+  font-weight: 700;
+  color: var(--verde-escuro);
+}
+
+.sobre__modal-nota {
+  margin: 0;
+  font-family: var(--fonte-mao);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--tinta-suave);
+}
+
+@keyframes sobreModalFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sobreModalPop {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
 /* ---------- Tablet / mobile ---------- */
 @media (max-width: 960px) {
   .sobre__deco {
@@ -161,6 +358,16 @@
   }
   .sobre__custo--other {
     width: min(260px, 46%);
+  }
+
+  .sobre__info-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+  }
+
+  .sobre__modal-box {
+    padding: 26px 20px 20px;
   }
 }
 
