@@ -76,9 +76,10 @@ export default function Doar() {
             </button>
           </div>
           <p className="doar__pix-nota">
-            Nota de transparência: esta chave PIX direciona sua doação para uma
-            conta destinada integralmente à campanha de arrecadação. Todos os
-            valores recebidos são atualizados periodicamente aqui no site.
+            Nota de transparência: essa chave PIX é de uma conta usada só para
+            a campanha, e eu atualizo os valores manualmente aqui. Fazer um
+            site próprio foi a minha alternativa para evitar as taxas
+            (abusivas) das plataformas de arrecadação.
           </p>
         </div>
 

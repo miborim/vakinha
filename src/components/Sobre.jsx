@@ -33,33 +33,33 @@ const custos = [
 
 const detalhesOrcamento = {
   alimentacao: {
-    titulo: "1. Alimentação",
+    titulo: "Alimentaçao",
     itens: [
       { label: "Por mês", valor: "€300–400 = R$ 1.800-2.400/mês" },
       { label: "Total em 3 meses", valor: "R$ 5.400-7.200", destaque: true },
     ],
   },
   moradia: {
-    titulo: "2. Moradia",
+    titulo: "Moradia",
     itens: [
       { label: "Por mês", valor: "€500–700 = R$ 3.000-4.200/mês" },
       { label: "Total em 3 meses", valor: "R$ 9.000-12.600", destaque: true },
     ],
   },
   passagens: {
-    titulo: "3. Passagens",
+    titulo: "Passagens",
     itens: [
-      { label: "Já gasto (confirmado)", valor: "R$ 6.300", destaque: true },
+      { label: "Já gasto", valor: "R$ 6.300", destaque: true },
     ],
   },
   outras: {
-    titulo: "4. Outras despesas",
+    titulo: "Outras despesas",
     subtitulo: "Transporte, chip e seguro saúde",
     itens: [
-      { label: "Por mês (Passe Navigo)", valor: "€30–86 = R$ 180-516/mês" },
+      { label: "Por mês (Passe Navigo)", valor: "€90,80 = R$ 545/mês" },
       { label: "Chip telefônico (custo único)", valor: "R$ 300-400" },
       { label: "Seguro saúde, 3 meses", valor: "€75–113 = R$ 450-678" },
-      { label: "Total em 3 meses", valor: "R$ 1.290-2.626", destaque: true },
+      { label: "Total em 3 meses", valor: "R$ 2.385-2.713", destaque: true },
     ],
   },
 };
@@ -68,21 +68,25 @@ const resumoTotal = [
   { categoria: "Alimentação", valor: "R$ 5.400-7.200" },
   { categoria: "Moradia", valor: "R$ 9.000-12.600" },
   { categoria: "Passagens", valor: "R$ 6.300" },
-  { categoria: "Transporte / chip / seguro", valor: "R$ 1.290-2.626" },
+  { categoria: "Transporte / chip / seguro", valor: "R$ 2.385-2.713" },
 ];
 
 export default function Sobre() {
   const [categoriaAberta, setCategoriaAberta] = useState(null);
+  const [resumoAberto, setResumoAberto] = useState(false);
   const detalhe = categoriaAberta ? detalhesOrcamento[categoriaAberta] : null;
 
   useEffect(() => {
-    if (!categoriaAberta) return;
+    if (!categoriaAberta && !resumoAberto) return;
     const aoTeclar = (e) => {
-      if (e.key === "Escape") setCategoriaAberta(null);
+      if (e.key === "Escape") {
+        setCategoriaAberta(null);
+        setResumoAberto(false);
+      }
     };
     window.addEventListener("keydown", aoTeclar);
     return () => window.removeEventListener("keydown", aoTeclar);
-  }, [categoriaAberta]);
+  }, [categoriaAberta, resumoAberto]);
 
   return (
     <section className="section sobre" id="sobre">
@@ -114,7 +118,7 @@ export default function Sobre() {
           <span className="sobre__mestrado">
             &ldquo;Artificial Intelligence for Business Transformation&rdquo;
           </span>{" "}
-          na ECE Paris. A faculdade cobre os custos dos estudos — mas os gastos
+          na ECE Paris. A faculdade cobre os custos dos estudos, mas os gastos
           pessoais ficam por minha conta. É aqui que a sua ajuda faz a
           diferença.
         </p>
@@ -123,21 +127,50 @@ export default function Sobre() {
       <div className="sobre__custos">
         {custos.map((c) => (
           <figure className={`sobre__custo ${c.cls}`} key={c.label}>
-            <div className="sobre__custo-imgwrap">
+            <div
+              className="sobre__custo-imgwrap"
+              role="button"
+              tabIndex={0}
+              onClick={() => setCategoriaAberta(c.key)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setCategoriaAberta(c.key);
+                }
+              }}
+              aria-label={`Ver detalhes do orçamento de ${c.label}`}
+            >
               <img src={c.src} alt={c.label} />
               <button
                 type="button"
                 className="sobre__info-btn"
-                onClick={() => setCategoriaAberta(c.key)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCategoriaAberta(c.key);
+                }}
                 aria-label={`Ver detalhes do orçamento de ${c.label}`}
               >
-                i
+                <span aria-hidden="true">i</span>
               </button>
             </div>
             <figcaption>{c.label}</figcaption>
           </figure>
         ))}
       </div>
+
+      <p className="sobre__nota">
+        <button
+          type="button"
+          className="sobre__nota-destaque"
+          onClick={() => setResumoAberto(true)}
+        >
+          Nesse orçamento
+        </button>{" "}
+        eu não incluí gastos com lazer ou viagens pessoais, considerei só o
+        necessário para os estudos mesmo. A partir desses valores, calculei
+        quanto ainda preciso complementar do que já tenho guardado, além de
+        uma reserva de emergência para os imprevistos :)
+      </p>
 
       {detalhe && (
         <div
@@ -173,36 +206,48 @@ export default function Sobre() {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+      )}
 
-            <div className="sobre__modal-resumo">
-              <h4>Resumo total — apenas Paris (3 meses)</h4>
-              <table>
-                <tbody>
-                  {resumoTotal.map((r) => (
-                    <tr key={r.categoria}>
-                      <td>{r.categoria}</td>
-                      <td>{r.valor}</td>
-                    </tr>
-                  ))}
-                  <tr className="is-total">
-                    <td>Total</td>
-                    <td>R$ 21.990-28.726</td>
-                  </tr>
-                  <tr className="is-media">
-                    <td>Cenário médio</td>
-                    <td>R$ 25.358</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+      {resumoAberto && (
+        <div
+          className="sobre__modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Resumo total do orçamento"
+          onClick={() => setResumoAberto(false)}
+        >
+          <div className="sobre__modal-box" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="sobre__modal-fechar"
+              onClick={() => setResumoAberto(false)}
+              aria-label="Fechar"
+            >
+              ×
+            </button>
 
-            <p className="sobre__modal-nota">
-              Nesse orçamento eu não incluí gastos com lazer ou viagens
-              pessoais — considerei só o necessário para os estudos mesmo :)
-              A partir desses valores, calculei quanto ainda preciso
-              complementar do que já tenho guardado, além de uma reserva de
-              emergência para os imprevistos.
-            </p>
+            <h3 className="sobre__modal-titulo">Resumo total</h3>
+
+            <table className="sobre__tabela">
+              <tbody>
+                {resumoTotal.map((r) => (
+                  <tr key={r.categoria}>
+                    <td>{r.categoria}</td>
+                    <td>{r.valor}</td>
+                  </tr>
+                ))}
+                <tr className="is-total">
+                  <td>Total</td>
+                  <td>R$ 23.085-28.813</td>
+                </tr>
+                <tr className="is-media">
+                  <td>Cenário médio</td>
+                  <td>R$ 25.949</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       )}

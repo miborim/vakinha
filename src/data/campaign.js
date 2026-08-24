@@ -5,15 +5,15 @@ export const campaign = {
   curso: "Master em AI for Business Transformation",
   meta: 18000, // R$
   arrecadado: 10, // R$ — atualize conforme as doações chegarem
-  atualizadoEm: "18/08/2026, às 22h", // data da última atualização do valor arrecadado
+  atualizadoEm: "18/08/2026, às 22h13", // data da última atualização do valor arrecadado
   moeda: "BRL",
   // Link de doação (ex: vaquinha, PIX, etc.) — adicione quando tiver
   linkDoacao: "#doar",
   pix: "mirellaborimlima@gmail.com", // chave PIX (e-mail) — ajuste se necessário
   contato: {
     email: "mirellaborimlima@gmail.com",
-    instagram: "https://instagram.com/mimiaparis",
-    instagramUser: "@mimiaparis",
+    instagram: "https://instagram.com/bonjourmimie",
+    instagramUser: "bonjourmimie",
     linkedin: "https://www.linkedin.com/in/mirellaborim",
     linkedinNome: "Mirella Borim",
   },
