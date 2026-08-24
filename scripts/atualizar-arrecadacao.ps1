@@ -262,7 +262,7 @@ function Get-UpdatedCampaignContent([string]$content, [double]$novoValor, [strin
 function Get-DataDeAgora {
     $agora = Get-Date
     $aChar = [string][char]0x00E0
-    return $agora.ToString("dd/MM/yyyy") + ", " + $aChar + "s " + $agora.ToString("HH") + "h"
+    return $agora.ToString("dd/MM/yyyy") + ", " + $aChar + "s " + $agora.ToString("HH") + "h" + $agora.ToString("mm")
 }
 
 # ==============================================================================

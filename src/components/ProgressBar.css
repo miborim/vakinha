@@ -65,6 +65,10 @@
   color: var(--tinta);
 }
 
+.progresso__legenda-valor {
+  font-family: var(--fonte-maquina);
+}
+
 .progresso__coracao {
   font-family: var(--fonte-corpo);
   color: var(--verde);

@@ -38,7 +38,7 @@
 }
 
 .sobre__texto {
-  max-width: 720px;
+  max-width: 820px;
   margin: 0 auto;
   font-family: var(--fonte-mono);
   font-size: clamp(0.82rem, 1.05vw, 1rem);
@@ -79,6 +79,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
+  cursor: pointer;
 }
 
 .sobre__custo img {
@@ -86,38 +87,12 @@
   height: auto;
   display: block;
   filter: drop-shadow(2px 4px 5px rgba(60, 45, 25, 0.14));
+  transition: transform 0.18s ease;
 }
 
-.sobre__info-btn {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 2px solid var(--tinta);
-  background: var(--mostarda);
-  color: var(--tinta);
-  font-family: var(--fonte-maquina);
-  font-size: 0.9rem;
-  font-weight: 700;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 2px 2px 0 var(--tinta);
-  transition: transform 0.15s ease, background 0.15s ease;
-}
-
-.sobre__info-btn:hover {
-  background: var(--rosa);
-  transform: scale(1.1) rotate(-6deg);
-}
-
-.sobre__info-btn:focus-visible {
-  outline: 2px solid var(--verde);
-  outline-offset: 2px;
+.sobre__custo-imgwrap:hover img,
+.sobre__custo-imgwrap:focus-visible img {
+  transform: scale(1.03);
 }
 
 .sobre__custo figcaption {
@@ -125,6 +100,36 @@
   font-size: clamp(0.8rem, 1vw, 0.95rem);
   color: var(--tinta);
   letter-spacing: 0.01em;
+}
+
+.sobre__info-btn {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: clamp(22px, 2.3vw, 27px);
+  height: clamp(22px, 2.3vw, 27px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1.4px solid currentColor;
+  border-radius: 50%;
+  background: none;
+  color: var(--tinta);
+  font-family: var(--fonte-mono);
+  font-size: clamp(0.68rem, 0.85vw, 0.78rem);
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  filter: drop-shadow(1px 2px 3px rgba(60, 45, 25, 0.35));
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.sobre__info-btn:hover,
+.sobre__info-btn:focus-visible,
+.sobre__info-btn:active {
+  color: var(--vinho);
+  transform: scale(1.12);
 }
 
 /* Larguras individuais (aspectos diferentes) */
@@ -269,58 +274,74 @@
   text-align: right;
 }
 
-.sobre__modal-resumo {
-  margin: 0 0 16px;
-  padding-top: 16px;
-  border-top: 2px dashed var(--mostarda);
+/* ---------- Nota abaixo das categorias ---------- */
+.sobre__nota {
+  position: relative;
+  z-index: 2;
+  max-width: 780px;
+  margin: clamp(20px, 3.5vw, 32px) auto 0;
+  padding: 0 24px;
+  font-family: var(--fonte-mono);
+  font-size: clamp(0.78rem, 0.95vw, 0.88rem);
+  line-height: 1.75;
+  color: var(--tinta-suave);
+  text-align: center;
 }
 
-.sobre__modal-resumo h4 {
-  margin: 0 0 10px;
-  font-family: var(--fonte-maquina);
-  font-size: 0.82rem;
-  letter-spacing: 0.01em;
-  color: var(--tinta);
+.sobre__nota-destaque {
+  display: inline;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--vinho);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
 
-.sobre__modal-resumo table {
+.sobre__nota-destaque:hover {
+  color: var(--verde-escuro);
+}
+
+.sobre__nota-destaque:focus-visible {
+  outline: 2px solid var(--verde);
+  outline-offset: 2px;
+}
+
+/* ---------- Tabela de resumo (modal "Resumo total") ---------- */
+.sobre__tabela {
   width: 100%;
   border-collapse: collapse;
   font-family: var(--fonte-mono);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
 }
 
-.sobre__modal-resumo td {
-  padding: 6px 4px;
+.sobre__tabela td {
+  padding: 8px 4px;
   border-bottom: 1px solid rgba(47, 43, 37, 0.12);
   color: var(--tinta-suave);
 }
 
-.sobre__modal-resumo td:last-child {
+.sobre__tabela td:last-child {
   text-align: right;
   color: var(--tinta);
 }
 
-.sobre__modal-resumo tr.is-total td {
+.sobre__tabela tr.is-total td {
   border-top: 2px solid var(--tinta);
   border-bottom: none;
-  padding-top: 10px;
+  padding-top: 12px;
   font-weight: 700;
   color: var(--vinho);
 }
 
-.sobre__modal-resumo tr.is-media td {
+.sobre__tabela tr.is-media td {
   border-bottom: none;
   font-weight: 700;
   color: var(--verde-escuro);
-}
-
-.sobre__modal-nota {
-  margin: 0;
-  font-family: var(--fonte-mao);
-  font-size: 1.05rem;
-  line-height: 1.5;
-  color: var(--tinta-suave);
 }
 
 @keyframes sobreModalFade {
@@ -358,12 +379,6 @@
   }
   .sobre__custo--other {
     width: min(260px, 46%);
-  }
-
-  .sobre__info-btn {
-    width: 34px;
-    height: 34px;
-    font-size: 1rem;
   }
 
   .sobre__modal-box {
