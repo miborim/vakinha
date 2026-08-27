@@ -40,7 +40,7 @@ const entradas = [
   {
     logo: `${B}/Microsoft-Logo.webp`,
     logoCls: "is-microsoft",
-    data: "janeiro/2026",
+    data: "março a setembro/2026",
     desc: "Estágio de negócios em Sucesso do Cliente",
   },
   {
