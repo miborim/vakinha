@@ -47,7 +47,7 @@ const entradas = [
     logo: withBase("/logos/logo-ece.svg"),
     logoCls: "is-ece",
     data: "outubro a dezembro/2026",
-    desc: 'Mestrado em "AI for Business Transformation"',
+    desc: 'Intercâmbio em "AI for Business Transformation"',
   },
 ];
 
