@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender.mjs",
+    "build:spa": "vite build",
+    "gerar:preview": "node scripts/gerar-preview-social.mjs",
     "lint": "oxlint",
     "preview": "vite preview"
   },
