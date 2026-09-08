@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Página não encontrada · Mirella na França</title>
+    <meta name="description" content="Esta página não existe. Volte para a campanha da Mirella na França." />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="icon" type="image/png" href="/vakinha/favicon.png" />
+    <link rel="apple-touch-icon" href="/vakinha/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Special+Elite&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --papel: #fbf8ef;
+        --tinta: #2f2b25;
+        --tinta-suave: #4a453c;
+        --vinho: #8f3b47;
+        --fundo: #fafafa;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: var(--fundo);
+        color: var(--tinta);
+        font-family: "Space Mono", "Courier New", monospace;
+        line-height: 1.7;
+      }
+      .caixa {
+        max-width: 460px;
+        width: 100%;
+        padding: 36px 30px;
+        text-align: center;
+        background: var(--papel);
+        border: 2px solid var(--tinta);
+        border-radius: 3px;
+        box-shadow: 6px 6px 0 var(--tinta);
+      }
+      h1 {
+        margin: 0 0 6px;
+        font-family: "Special Elite", "Courier New", monospace;
+        font-size: 3.2rem;
+        line-height: 1;
+        color: var(--vinho);
+      }
+      h2 {
+        margin: 0 0 16px;
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 24px;
+        font-size: 0.85rem;
+        color: var(--tinta-suave);
+      }
+      a.voltar {
+        display: inline-block;
+        min-height: 44px;
+        padding: 12px 26px;
+        background: var(--papel);
+        border: 2px solid var(--tinta);
+        border-radius: 2px;
+        box-shadow: 3px 3px 0 var(--tinta);
+        color: var(--tinta);
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      a.voltar:hover {
+        color: var(--vinho);
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 var(--tinta);
+      }
+      a.voltar:focus-visible {
+        outline: 3px solid var(--vinho);
+        outline-offset: 3px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="caixa">
+      <h1>404</h1>
+      <h2>Essa página se perdeu no caminho para Paris</h2>
+      <p>
+        O endereço que você tentou abrir não existe (ou mudou de lugar). Mas a
+        campanha continua de pé!
+      </p>
+      <a class="voltar" href="/vakinha/">Voltar para a página inicial</a>
+    </main>
+  </body>
+</html>

@@ -75,17 +75,16 @@ function Monte({ label, tilt, dir, fotos }) {
   };
 
   return (
-    <figure
-      className="monte"
-      style={{ "--tilt": `${tilt}deg` }}
-      tabIndex={0}
-      role="button"
-      aria-label={`${label}: foto ${i + 1} de ${n}. Ative para ver a próxima.`}
-      onMouseEnter={next}
-      onClick={next}
-      onKeyDown={onKey}
-    >
-      <div className="monte__pilha">
+    <figure className="monte" style={{ "--tilt": `${tilt}deg` }}>
+      <div
+        className="monte__pilha"
+        tabIndex={0}
+        role="button"
+        aria-label={`${label}: foto ${i + 1} de ${n}. Ative para ver a próxima.`}
+        onMouseEnter={next}
+        onClick={next}
+        onKeyDown={onKey}
+      >
         {n > 2 && (
           <div className="monte__card monte__card--b2" aria-hidden="true">
             <img src={src(2)} alt="" loading="lazy" />
@@ -98,7 +97,7 @@ function Monte({ label, tilt, dir, fotos }) {
         )}
         <div className="monte__card monte__card--top" key={i}>
           <img src={src(0)} alt={`${label} — foto ${i + 1}`} loading="lazy" />
-          <span className="monte__conta">
+          <span className="monte__conta" aria-hidden="true">
             {i + 1}/{n}
           </span>
           <span className="monte__hint" aria-hidden="true">
@@ -113,14 +112,17 @@ function Monte({ label, tilt, dir, fotos }) {
 
 export default function Galeria() {
   return (
-    <section className="section section--alt galeria-sec" id="galeria">
-      <img className="galeria__divider" src={`${G}/galeria-ripped-paper.webp`} alt="" aria-hidden="true" />
-      <img className="galeria__sticker galeria__sticker--stars" src={`${G}/galeria-stars.webp`} alt="" aria-hidden="true" />
-      <img className="galeria__sticker galeria__sticker--mouth" src={`${G}/galeria-mouth-icon.webp`} alt="" aria-hidden="true" />
-      <img className="galeria__sticker galeria__sticker--camera" src={`${G}/galeria-camera.webp`} alt="" aria-hidden="true" />
+    <section className="section section--alt galeria-sec" id="galeria" aria-labelledby="titulo-galeria">
+      <img className="galeria__divider" src={`${G}/galeria-ripped-paper.webp`} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+      <img className="galeria__sticker galeria__sticker--stars" src={`${G}/galeria-stars.webp`} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+      <img className="galeria__sticker galeria__sticker--mouth" src={`${G}/galeria-mouth-icon.webp`} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+      <img className="galeria__sticker galeria__sticker--camera" src={`${G}/galeria-camera.webp`} alt="" aria-hidden="true" loading="lazy" decoding="async" />
 
       <div className="container">
-        <img className="galeria__titulo" src={`${G}/galeria-title.webp`} alt="Galeria" />
+        <h2 className="sr-only" id="titulo-galeria">
+          Galeria
+        </h2>
+        <img className="galeria__titulo" src={`${G}/galeria-title.webp`} alt="" aria-hidden="true" loading="lazy" decoding="async" />
         <p className="section__subtitulo">
           Seria um erro pensar que a vida pode ser resumida em algumas fotos,
           mas, ainda assim, vale à pena tentar. Passe o mouse — ou toque no

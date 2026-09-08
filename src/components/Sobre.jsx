@@ -89,27 +89,29 @@ export default function Sobre() {
   }, [categoriaAberta, resumoAberto]);
 
   return (
-    <section className="section sobre" id="sobre">
+    <section className="section sobre" id="sobre" aria-labelledby="titulo-sobre">
       {/* Faixa rasgada (bandeira da França) no topo — transição da Hero */}
       <img
         className="sobre__flag-band"
         src={`${B}/sobre-france-flag.webp`}
         alt=""
-        aria-hidden="true"
-      />
+        aria-hidden="true" loading="lazy" decoding="async" />
 
       {/* Enfeites (colagem) */}
-      <img className="sobre__deco sobre__star" src={`${B}/sobre-star.webp`} alt="" aria-hidden="true" />
-      <img className="sobre__deco sobre__letter" src={`${B}/sobre-acceptance-letter.webp`} alt="Carta de aprovação da ECE" />
-      <img className="sobre__deco sobre__painting" src={`${B}/sobre-painting.webp`} alt="" aria-hidden="true" />
-      <img className="sobre__deco sobre__trophy" src={`${B}/sobre-trophy.webp`} alt="" aria-hidden="true" />
+      <img className="sobre__deco sobre__star" src={`${B}/sobre-star.webp`} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+      <img className="sobre__deco sobre__letter" src={`${B}/sobre-acceptance-letter.webp`} alt="Carta de aprovação da ECE" loading="lazy" decoding="async" />
+      <img className="sobre__deco sobre__painting" src={`${B}/sobre-painting.webp`} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+      <img className="sobre__deco sobre__trophy" src={`${B}/sobre-trophy.webp`} alt="" aria-hidden="true" loading="lazy" decoding="async" />
 
       <div className="sobre__inner">
+        <h2 className="sr-only" id="titulo-sobre">
+          Sobre o intercâmbio
+        </h2>
         <img
           className="sobre__titulo-img"
           src={`${B}/sobre-title.webp`}
-          alt="Sobre o intercâmbio"
-        />
+          alt=""
+          aria-hidden="true" loading="lazy" decoding="async" />
 
         <p className="sobre__texto">
           Conhecer a França sempre foi um sonho, e é um privilégio que a minha
@@ -127,20 +129,12 @@ export default function Sobre() {
       <div className="sobre__custos">
         {custos.map((c) => (
           <figure className={`sobre__custo ${c.cls}`} key={c.label}>
+            {/* atalho de mouse/toque; o teclado usa o botao "i" abaixo */}
             <div
               className="sobre__custo-imgwrap"
-              role="button"
-              tabIndex={0}
               onClick={() => setCategoriaAberta(c.key)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setCategoriaAberta(c.key);
-                }
-              }}
-              aria-label={`Ver detalhes do orçamento de ${c.label}`}
             >
-              <img src={c.src} alt={c.label} />
+              <img src={c.src} alt={c.label} loading="lazy" decoding="async" />
               <button
                 type="button"
                 className="sobre__info-btn"

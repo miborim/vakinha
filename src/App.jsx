@@ -9,8 +9,11 @@ import Footer from "./components/Footer";
 export default function App() {
   return (
     <>
+      <a className="skip-link" href="#conteudo">
+        Pular para o conteúdo principal
+      </a>
       <Navbar />
-      <main>
+      <main id="conteudo" tabIndex={-1}>
         <Hero />
         <Sobre />
         <Historia />

@@ -6,11 +6,12 @@
 }
 
 /* ---------- Colagem de fundo (tela inteira) ---------- */
-.hero__collage {
-  display: block;
+.hero__collage-wrap {
+  display: contents;
 }
 
-.hero__collage--desktop {
+.hero__collage {
+  display: block;
   position: absolute;
   inset: 0;
   width: 100%;
@@ -20,10 +21,6 @@
   z-index: 0;
   pointer-events: none;
   user-select: none;
-}
-
-.hero__collage--mobile {
-  display: none;
 }
 
 /* ---------- Conteúdo sobre a parte branca (direita) ---------- */
@@ -142,15 +139,15 @@
     min-height: 0;
   }
 
-  .hero__collage--desktop {
-    display: none;
-  }
-
-  .hero__collage--mobile {
+  .hero__collage {
+    position: relative;
+    inset: auto;
     display: block;
     width: 100%;
     height: auto;
-    position: relative;
+    /* reserva o espaço antes da imagem carregar (evita layout shift) */
+    aspect-ratio: 900 / 1278;
+    object-fit: fill;
     z-index: 1;
   }
 

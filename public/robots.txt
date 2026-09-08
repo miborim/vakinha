@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://miborim.github.io/vakinha/sitemap.xml

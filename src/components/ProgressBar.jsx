@@ -23,9 +23,11 @@ export default function ProgressBar() {
       <div
         className="progresso__barra"
         role="progressbar"
+        aria-label={`Progresso da arrecadação: ${formatBRL(arrecadado)} de ${formatBRL(meta)}`}
         aria-valuenow={Math.round(pct)}
         aria-valuemin={0}
         aria-valuemax={100}
+        aria-valuetext={`${formatPercent(pct)}% da meta`}
       >
         <div className="progresso__preenchimento" style={{ width: `${pct}%` }} />
       </div>

@@ -70,8 +70,55 @@ img {
   display: block;
 }
 
+/* Texto visível apenas para leitores de tela e extratores de conteúdo
+   (crawlers, bots de IA). Mantém o design intacto e o HTML semântico. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Indicador de foco consistente e visível em toda a navegação por teclado. */
+:focus-visible {
+  outline: 3px solid var(--vinho);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Atalho para pular direto ao conteúdo principal (leitores de tela/teclado). */
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 999;
+  padding: 10px 16px;
+  background: var(--papel);
+  border: 2px solid var(--tinta);
+  border-radius: 2px;
+  font-family: var(--fonte-mono);
+  font-size: 0.9rem;
+  color: var(--tinta);
+  box-shadow: 3px 3px 0 var(--tinta);
+  transform: translateY(-150%);
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 main {
   overflow-x: clip;
+}
+
+main:focus {
+  outline: none;
 }
 
 .container {
@@ -239,5 +286,23 @@ main {
   /* Esconde stickers puramente decorativos no mobile para não poluir */
   .sticker--deco {
     display: none;
+  }
+}
+
+/* ---------- Respeito a "reduzir movimento" (WCAG 2.3.3) ----------
+   Quem ativa essa preferência no sistema (por enxaqueca, vertigem,
+   sensibilidade vestibular) passa a ver a página sem animações. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
