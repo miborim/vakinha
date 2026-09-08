@@ -89,7 +89,7 @@ export default function Doar() {
         </div>
 
         <div className="doar__ajuda">
-          <h3 className="doar__ajuda-titulo">Como você pode ajudar</h3>
+          <h3 className="doar__ajuda-titulo">formas de ajudar</h3>
           <ol className="doar__ajuda-lista">
             <li>
               <strong>Doe qualquer valor via PIX</strong> para a chave{" "}
