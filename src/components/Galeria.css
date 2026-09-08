@@ -81,17 +81,21 @@
 }
 
 .monte:hover,
-.monte:focus-visible {
+.monte:has(.monte__pilha:focus-visible) {
   transform: rotate(0deg) scale(1.04);
   z-index: 6;
 }
 
-.monte:focus-visible .monte__card--top {
+.monte:has(.monte__pilha:focus-visible) .monte__card--top {
   box-shadow: 0 0 0 3px var(--vinho), 0 8px 18px rgba(60, 45, 25, 0.3);
 }
 
 .monte__pilha {
   position: relative;
+}
+
+.monte__pilha:focus-visible {
+  outline: none;
 }
 
 .monte__card {
@@ -171,7 +175,7 @@
 }
 
 .monte:hover .monte__hint,
-.monte:focus-visible .monte__hint {
+.monte:has(.monte__pilha:focus-visible) .monte__hint {
   opacity: 1;
   transform: scale(1);
 }
