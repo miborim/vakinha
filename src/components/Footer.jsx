@@ -12,8 +12,7 @@ export default function Footer() {
           className="footer__band"
           src={withBase("/footer/footer-band.webp")}
           alt=""
-          aria-hidden="true"
-        />
+          aria-hidden="true" loading="lazy" decoding="async" />
 
         <ul className="footer__contatos">
           <li>
