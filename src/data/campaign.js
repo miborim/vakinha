@@ -4,8 +4,8 @@ export const campaign = {
   destino: "ECE — École d'ingénieurs, Paris",
   curso: "Master em AI for Business Transformation",
   meta: 18000, // R$
-  arrecadado: 7102, // R$ — atualize conforme as doações chegarem
-  atualizadoEm: "09/09/2026, às 19h25", // data da última atualização do valor arrecadado
+  arrecadado: 7112, // R$ — atualize conforme as doações chegarem
+  atualizadoEm: "09/09/2026, às 19h52", // data da última atualização do valor arrecadado
   moeda: "BRL",
   // Link de doação (ex: vaquinha, PIX, etc.) — adicione quando tiver
   linkDoacao: "#doar",
