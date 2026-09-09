@@ -34,6 +34,17 @@ pwsh -File scripts/atualizar-arrecadacao.ps1 -DryRun
 Requisitos: [Git](https://git-scm.com), [GitHub CLI](https://cli.github.com)
 autenticado e PowerShell 7+.
 
+### Atalho na área de trabalho
+
+Para não precisar do terminal, crie um atalho com ícone do site:
+
+```powershell
+pwsh -File scripts/criar-atalho.ps1
+```
+
+Depois é só dar dois cliques em **"Atualizar arrecadacao"** na área de trabalho.
+Rode o comando de novo se a pasta do projeto mudar de lugar.
+
 ---
 
 ## Desenvolvimento
