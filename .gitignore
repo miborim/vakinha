@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Icone do atalho, gerado por scripts/criar-atalho.ps1
+scripts/atalho.ico
