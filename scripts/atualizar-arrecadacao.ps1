@@ -13,6 +13,11 @@
          quanto vai ficar - em R$ e em %), atualiza o arquivo da campanha,
          faz commit + push na "develop" e abre (ou reaproveita) um Pull Request
          de "develop" para "main", te enviando o link.
+      6. Pergunta se voce quer publicar agora: se sim, aprova o Pull Request,
+         acompanha a publicacao e confirma que o site ja mostra o valor novo.
+
+    Se qualquer passo do git/gh falhar, o script AVISA e desfaz o que fez,
+    em vez de dizer que deu certo sem ter publicado nada.
 
     Uso normal:  duvlo clique no atalho da area de trabalho (ou rode este arquivo).
     Modo teste:  pwsh -File atualizar-arrecadacao.ps1 -DryRun
@@ -34,6 +39,7 @@ $CampaignFile  = Join-Path $RepoPath "src\data\campaign.js"
 $TargetGhUser  = "miborim"
 $BaseBranch    = "main"
 $WorkBranch    = "develop"
+$SiteUrl       = "https://miborim.github.io/vakinha/"
 $BarWidth      = 36
 
 # ----------------------------------------------------------------------------
@@ -74,6 +80,47 @@ function Get-Percent([double]$value, [double]$meta) {
     return [math]::Round(($value / $meta) * 100, 1)
 }
 
+function Format-Percent([double]$percent) {
+    # Mesma formatacao que o site usa (pt-BR, ate 1 casa decimal): 38,1%
+    $s = $percent.ToString("0.#", [System.Globalization.CultureInfo]::InvariantCulture)
+    return $s.Replace(".", ",")
+}
+
+# ----------------------------------------------------------------------------
+# Execucao segura de comandos externos
+# ----------------------------------------------------------------------------
+function Invoke-Git {
+    <#
+        Roda o git e ABORTA se ele falhar. Sem isso, uma falha de push ou de pull
+        passaria despercebida e o script anunciaria sucesso sem ter publicado nada.
+    #>
+    param(
+        [Parameter(Mandatory)][string[]]$GitArgs,
+        [string]$Explicacao
+    )
+    $saida = & git @GitArgs 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        $detalhe = ($saida | Out-String).Trim()
+        $msg = if ($Explicacao) { $Explicacao } else { "Falha ao executar: git $($GitArgs -join ' ')" }
+        if ($detalhe) { $msg += "`n`n  O git respondeu:`n    " + ($detalhe -replace "`r?`n", "`n    ") }
+        throw $msg
+    }
+    return $saida
+}
+
+function Test-Prerequisitos {
+    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+        throw "O 'git' nao foi encontrado. Instale o Git para Windows e tente de novo."
+    }
+    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+        throw "O 'gh' (GitHub CLI) nao foi encontrado. Instale em https://cli.github.com e tente de novo."
+    }
+    gh auth status --hostname github.com 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Voce nao esta autenticada no GitHub CLI. Rode 'gh auth login' e tente de novo."
+    }
+}
+
 function Write-ProgressBlock([string]$label, [double]$value, [double]$meta, [string]$color) {
     $percent = Get-Percent $value $meta
     $clamped = [math]::Max(0, [math]::Min(100, $percent))
@@ -87,7 +134,7 @@ function Write-ProgressBlock([string]$label, [double]$value, [double]$meta, [str
     Write-Host "    [" -NoNewline -ForegroundColor DarkGray
     Write-Host $bar -NoNewline -ForegroundColor $color
     Write-Host "] " -NoNewline -ForegroundColor DarkGray
-    Write-Host ("$percent%") -ForegroundColor $color
+    Write-Host ((Format-Percent $percent) + "%") -ForegroundColor $color
 }
 
 # ----------------------------------------------------------------------------
@@ -102,7 +149,8 @@ function Read-LineCancelable {
     # Quando a entrada vem redirecionada/piped (ex.: testes automatizados), cai
     # no Read-Host normal, onde digitar 'sair'/'cancelar'/'exit'/'quit' cancela.
     if ([Console]::IsInputRedirected) {
-        $line = Read-Host
+        $line = [Console]::In.ReadLine()
+        if ($null -eq $line) { throw [System.Exception]::new("CANCELLED") }
         if (Test-CancelWord $line) { throw [System.Exception]::new("CANCELLED") }
         return $line
     }
@@ -285,6 +333,8 @@ $didPushLocation = $false
 
 try {
     if (-not $DryRun) {
+        Test-Prerequisitos
+
         # --- Conta do GitHub CLI -------------------------------------------------
         try { $originalGhUser = (gh api user --jq ".login" 2>$null).Trim() } catch { $originalGhUser = $null }
 
@@ -321,9 +371,35 @@ try {
 
         Write-Host ""
         Write-Host "Sincronizando a branch '$WorkBranch'..." -ForegroundColor Cyan
-        git fetch origin --quiet
-        git checkout $WorkBranch --quiet 2>$null
-        git pull origin $WorkBranch --ff-only --quiet
+        Invoke-Git @("fetch", "origin", "--quiet") -Explicacao "Nao consegui buscar as novidades do GitHub. Verifique sua conexao com a internet."
+
+        $existeRemota = (& git ls-remote --heads origin $WorkBranch) -ne $null -and $LASTEXITCODE -eq 0
+        if (-not $existeRemota) {
+            throw "A branch '$WorkBranch' nao existe no GitHub. Avise quem cuida do repositorio."
+        }
+
+        Invoke-Git @("checkout", $WorkBranch, "--quiet") -Explicacao "Nao consegui mudar para a branch '$WorkBranch'."
+
+        # Compara o historico local com o do GitHub antes de mexer em qualquer coisa.
+        $contagem = (& git rev-list --left-right --count "$WorkBranch...origin/$WorkBranch") -split '\s+'
+        $aFrente = [int]$contagem[0]
+        $atras   = [int]$contagem[1]
+
+        if ($aFrente -gt 0 -and $atras -gt 0) {
+            throw ("A branch '$WorkBranch' do seu computador e a do GitHub seguiram caminhos diferentes " +
+                   "($aFrente commit(s) so aqui, $atras so no GitHub).`n" +
+                   "  Nada foi alterado. Para resolver, abra o terminal nesta pasta e rode:`n" +
+                   "    git checkout $WorkBranch`n" +
+                   "    git reset --hard origin/$WorkBranch`n" +
+                   "  (isso descarta alteracoes locais nao publicadas desta branch)")
+        }
+        if ($atras -gt 0) {
+            Invoke-Git @("merge", "--ff-only", "origin/$WorkBranch", "--quiet") -Explicacao "Nao consegui atualizar a branch '$WorkBranch' com o que esta no GitHub."
+            Write-Host "  Branch atualizada com o GitHub ($atras commit(s) novo(s))." -ForegroundColor DarkGray
+        }
+        if ($aFrente -gt 0) {
+            Write-Host "  Aviso: existe(m) $aFrente commit(s) aqui que ainda nao foram enviados ao GitHub. Serao enviados junto." -ForegroundColor Yellow
+        }
     }
 
     # --- Le estado atual da campanha --------------------------------------------
@@ -401,16 +477,60 @@ try {
             $valorNovo = [math]::Round($valorAntigo + $soma, 2)
         }
 
+        # Guarda o conteudo original para poder desfazer se o git/gh falhar.
+        $conteudoOriginal = $freshData.Content
+        $arquivoAlterado = $false
+
         $novoContent = Get-UpdatedCampaignContent $freshData.Content $valorNovo $novaData
         Set-Content -Path $CampaignFile -Value $novoContent -NoNewline -Encoding UTF8
+        $arquivoAlterado = $true
 
-        git add -- $CampaignFile
-        $commitMsg = "Atualiza arrecadacao: " + (Format-BRL $valorAntigo) + " -> " + (Format-BRL $valorNovo) + " (" + $novaData + ")"
-        git commit -m $commitMsg --quiet
-        git push origin $WorkBranch --quiet
+        # Confere que o arquivo gravado realmente contem o valor esperado,
+        # antes de commitar qualquer coisa.
+        $conferencia = Get-CampaignData $CampaignFile
+        if ($conferencia.Arrecadado -ne $valorNovo -or $conferencia.AtualizadoEm -ne $novaData) {
+            Set-Content -Path $CampaignFile -Value $conteudoOriginal -NoNewline -Encoding UTF8
+            throw ("A gravacao do arquivo nao ficou como esperado (li de volta " +
+                   (Format-BRL $conferencia.Arrecadado) + "). O arquivo foi restaurado e nada foi publicado.")
+        }
+
+        try {
+            Invoke-Git @("add", "--", $CampaignFile) -Explicacao "Nao consegui preparar o arquivo para o commit."
+
+            $temAlgoParaCommitar = $true
+            & git diff --cached --quiet -- $CampaignFile
+            if ($LASTEXITCODE -eq 0) { $temAlgoParaCommitar = $false }
+
+            if ($temAlgoParaCommitar) {
+                $commitMsg = "Atualiza arrecadacao: " + (Format-BRL $valorAntigo) + " -> " + (Format-BRL $valorNovo) + " (" + $novaData + ")"
+                Invoke-Git @("commit", "-m", $commitMsg, "--quiet") -Explicacao "Nao consegui registrar o commit."
+            } else {
+                Write-Host "Nada mudou no arquivo (o valor ja estava atualizado); seguindo para o envio." -ForegroundColor DarkGray
+            }
+
+            Invoke-Git @("push", "origin", $WorkBranch, "--quiet") -Explicacao ("Nao consegui enviar as alteracoes para o GitHub. " +
+                "Nada foi publicado. Verifique sua conexao e tente de novo.")
+        }
+        catch {
+            # Desfaz o commit local (se houver) e restaura o arquivo, para nao deixar
+            # o repositorio em um estado que atrapalhe a proxima execucao.
+            & git reset --hard "origin/$WorkBranch" --quiet 2>&1 | Out-Null
+            if ($arquivoAlterado) {
+                Set-Content -Path $CampaignFile -Value $conteudoOriginal -NoNewline -Encoding UTF8
+            }
+            throw
+        }
+
+        # Confirma que o commit realmente chegou ao GitHub.
+        Invoke-Git @("fetch", "origin", $WorkBranch, "--quiet") -Explicacao "Nao consegui confirmar o envio."
+        $localSha  = (& git rev-parse $WorkBranch).Trim()
+        $remotoSha = (& git rev-parse "origin/$WorkBranch").Trim()
+        if ($localSha -ne $remotoSha) {
+            throw "O envio nao foi confirmado pelo GitHub. Nada foi publicado; tente novamente."
+        }
 
         Write-Host ""
-        Write-Host "Alteracoes publicadas na branch '$WorkBranch'." -ForegroundColor Green
+        Write-Host "Alteracoes enviadas e confirmadas na branch '$WorkBranch'." -ForegroundColor Green
 
         Write-Host "Verificando Pull Request existente..." -ForegroundColor Cyan
         $existingPr = gh pr list --base $BaseBranch --head $WorkBranch --state open --json url --jq ".[0].url" 2>$null
@@ -418,14 +538,19 @@ try {
             $prUrl = $existingPr.Trim()
             Write-Host "Pull Request existente foi atualizado automaticamente com este commit." -ForegroundColor Green
         } else {
-            $percentAntigo = Get-Percent $valorAntigo $freshData.Meta
-            $percentNovo = Get-Percent $valorNovo $freshData.Meta
+            $percentAntigo = Format-Percent (Get-Percent $valorAntigo $freshData.Meta)
+            $percentNovo = Format-Percent (Get-Percent $valorNovo $freshData.Meta)
             $prTitle = "Atualiza arrecadacao: " + (Format-BRL $valorNovo) + " (" + $percentNovo + "%)"
             $prBody = "Atualizacao automatica via script de autoservico.`n`n" +
                       "- Antes: " + (Format-BRL $valorAntigo) + " (" + $percentAntigo + "%)`n" +
                       "- Depois: " + (Format-BRL $valorNovo) + " (" + $percentNovo + "%)`n" +
                       "- Data: " + $novaData
-            $prUrl = gh pr create --base $BaseBranch --head $WorkBranch --title $prTitle --body $prBody 2>$null
+            $prUrl = gh pr create --base $BaseBranch --head $WorkBranch --title $prTitle --body $prBody 2>&1 | Select-Object -Last 1
+            if ($LASTEXITCODE -ne 0 -or "$prUrl" -notmatch "^https://") {
+                throw ("O commit foi enviado com sucesso, mas nao consegui abrir o Pull Request automaticamente.`n" +
+                       "  Abra manualmente em: https://github.com/miborim/vakinha/compare/$BaseBranch...$WorkBranch")
+            }
+            $prUrl = "$prUrl".Trim()
             Write-Host "Pull Request criado." -ForegroundColor Green
         }
 
@@ -434,6 +559,67 @@ try {
         Write-Host "  Pull Request: $prUrl" -ForegroundColor Magenta
         Write-Rule "Magenta"
         try { Set-Clipboard -Value $prUrl; Write-Host "  (link copiado para a area de transferencia)" -ForegroundColor DarkGray } catch {}
+
+        # --- Publicar no site -----------------------------------------------------
+        # O Pull Request sozinho NAO atualiza o site: ele so vai ao ar quando for
+        # aprovado (merge) na branch "main", que e a que o GitHub Pages publica.
+        Write-Host ""
+        Write-Host "  O site so muda depois que este Pull Request for aprovado." -ForegroundColor DarkGray
+        $publicarAgora = Read-YesNo "Deseja publicar no site agora?" $true
+
+        if (-not $publicarAgora) {
+            Write-Host ""
+            Write-Host "Tudo certo. Quando quiser publicar, abra o link acima e clique em 'Merge pull request'." -ForegroundColor Yellow
+        } else {
+            Write-Host ""
+            Write-Host "Publicando..." -ForegroundColor Cyan
+            gh pr merge $prUrl --merge 2>&1 | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                gh pr merge $prUrl --merge --admin 2>&1 | Out-Null
+            }
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host ""
+                Write-Host "Nao consegui aprovar o Pull Request automaticamente." -ForegroundColor Red
+                Write-Host "Nada foi perdido: abra o link acima e clique em 'Merge pull request'." -ForegroundColor Yellow
+            } else {
+                Write-Host "Pull Request aprovado. Publicando o site (leva cerca de 1 minuto)..." -ForegroundColor Green
+
+                Start-Sleep -Seconds 8
+                $runId = gh run list --branch $BaseBranch --limit 1 --json databaseId --jq ".[0].databaseId" 2>$null
+                if ($runId) {
+                    gh run watch $runId.Trim() --exit-status 2>&1 | Out-Null
+                    $publicacaoOk = ($LASTEXITCODE -eq 0)
+                } else {
+                    $publicacaoOk = $false
+                }
+
+                # Confere no ar: o site agora entrega o HTML ja pronto, entao da
+                # para procurar o valor diretamente na pagina publicada.
+                $valorNoSite = Format-BRL $valorNovo
+                $confirmado = $false
+                foreach ($tentativa in 1..6) {
+                    Start-Sleep -Seconds 10
+                    try {
+                        $html = (Invoke-WebRequest "$SiteUrl`?cb=$(Get-Random)" -UseBasicParsing -TimeoutSec 20).Content
+                        if ($html -match [regex]::Escape($valorNoSite)) { $confirmado = $true; break }
+                    } catch {}
+                }
+
+                Write-Host ""
+                if ($confirmado) {
+                    Write-Rule "Green"
+                    Write-Host ("  PUBLICADO! O site ja mostra " + $valorNoSite + ".") -ForegroundColor Green
+                    Write-Host "  $SiteUrl" -ForegroundColor Green
+                    Write-Rule "Green"
+                } elseif ($publicacaoOk) {
+                    Write-Host "A publicacao terminou, mas o site ainda esta mostrando o valor antigo." -ForegroundColor Yellow
+                    Write-Host "Isso costuma ser o cache do navegador. Abra $SiteUrl e atualize com Ctrl+F5." -ForegroundColor Yellow
+                } else {
+                    Write-Host "A aprovacao deu certo, mas nao consegui confirmar a publicacao." -ForegroundColor Yellow
+                    Write-Host "Verifique em https://github.com/miborim/vakinha/actions" -ForegroundColor Yellow
+                }
+            }
+        }
     }
 }
 catch {
@@ -458,5 +644,7 @@ finally {
         gh auth switch --hostname github.com --user $originalGhUser | Out-Null
     }
     Write-Host ""
-    Read-Host "Pressione Enter para fechar"
+    if (-not [Console]::IsInputRedirected) {
+        Read-Host "Pressione Enter para fechar"
+    }
 }
