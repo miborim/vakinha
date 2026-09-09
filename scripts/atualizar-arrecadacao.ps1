@@ -595,13 +595,17 @@ try {
 
                 # Confere no ar: o site agora entrega o HTML ja pronto, entao da
                 # para procurar o valor diretamente na pagina publicada.
+                # O site formata a moeda com espaco nao separavel (U+00A0) entre
+                # "R$" e o numero, entao normalizamos os espacos antes de comparar.
                 $valorNoSite = Format-BRL $valorNovo
+                $alvo = ($valorNoSite -replace '\s+', ' ')
                 $confirmado = $false
                 foreach ($tentativa in 1..6) {
                     Start-Sleep -Seconds 10
                     try {
                         $html = (Invoke-WebRequest "$SiteUrl`?cb=$(Get-Random)" -UseBasicParsing -TimeoutSec 20).Content
-                        if ($html -match [regex]::Escape($valorNoSite)) { $confirmado = $true; break }
+                        $htmlNorm = ($html -replace '[\s\u00A0\u202F]+', ' ')
+                        if ($htmlNorm.Contains($alvo)) { $confirmado = $true; break }
                     } catch {}
                 }
 
