@@ -119,6 +119,18 @@ function Test-Prerequisitos {
     if ($LASTEXITCODE -ne 0) {
         throw "Voce nao esta autenticada no GitHub CLI. Rode 'gh auth login' e tente de novo."
     }
+
+    # A identidade do git nao vem junto no clone (fica no .git/config, que e local).
+    # Sem ela, o commit falharia so la na frente, no meio da atualizacao.
+    $gitNome  = (& git config user.name)
+    $gitEmail = (& git config user.email)
+    if ([string]::IsNullOrWhiteSpace($gitNome) -or [string]::IsNullOrWhiteSpace($gitEmail)) {
+        throw ("O git ainda nao sabe quem e voce (isso acontece em computador novo).`n" +
+               "  Nada foi alterado. Abra o terminal e rode uma vez:`n" +
+               "    git config --global user.name `"Mirella Borim`"`n" +
+               "    git config --global user.email `"miborim@users.noreply.github.com`"`n" +
+               "  Depois e so abrir o atalho de novo.")
+    }
 }
 
 function Write-ProgressBlock([string]$label, [double]$value, [double]$meta, [string]$color) {
@@ -332,6 +344,23 @@ $originalBranch  = $null
 $didPushLocation = $false
 
 try {
+    if ($DryRun) {
+        # No modo teste nada e publicado, entao uma pendencia de configuracao nao
+        # impede o preview. Ainda assim avisamos, porque o modo teste tambem serve
+        # para conferir se o computador esta pronto (ex.: maquina nova).
+        try {
+            Test-Prerequisitos
+            Write-Host ""
+            Write-Host "   Configuracao do computador: tudo certo." -ForegroundColor DarkGray
+        }
+        catch {
+            Write-Host ""
+            Write-Host "   Atencao: falta configurar algo neste computador." -ForegroundColor Yellow
+            Write-Host "   O modo teste continua, mas a atualizacao de verdade nao funcionaria ainda:" -ForegroundColor Yellow
+            $_.Exception.Message -split "`n" | ForEach-Object { Write-Host "   $_" -ForegroundColor Yellow }
+        }
+    }
+
     if (-not $DryRun) {
         Test-Prerequisitos
 
