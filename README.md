@@ -87,13 +87,15 @@ git config --global user.email "miborim@users.noreply.github.com"
 
 ### 4. Baixar o projeto
 
+O repositório é **privado**, por isso o passo 2 (login) precisa vir antes deste.
+
 Escolha uma pasta **fora do OneDrive** (a sincronização pode corromper o
 histórico do Git) e **fora de Downloads** (pasta que costuma ser limpa):
 
 ```powershell
 mkdir "$env:USERPROFILE\Projetos"
 cd "$env:USERPROFILE\Projetos"
-git clone https://github.com/miborim/vakinha.git
+gh repo clone miborim/vakinha
 cd vakinha
 ```
 
