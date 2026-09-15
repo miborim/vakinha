@@ -47,6 +47,92 @@ Rode o comando de novo se a pasta do projeto mudar de lugar.
 
 ---
 
+## Configurar em um computador novo
+
+Passo a passo para deixar a atualização da vaquinha funcionando em outra máquina.
+**Não é preciso copiar nada pelo pendrive ou pela rede** — está tudo no GitHub, e
+o que falta é gerado na hora.
+
+### 1. Instalar os três programas
+
+Abra o **Terminal do Windows** (ou o Prompt de Comando) e cole:
+
+```powershell
+winget install --id Microsoft.PowerShell -e
+winget install --id Git.Git -e
+winget install --id GitHub.cli -e
+```
+
+Depois **feche e abra o terminal de novo**, para que ele reconheça os comandos
+recém-instalados. A partir daqui, use o **PowerShell 7** (procure por "PowerShell 7"
+no menu Iniciar).
+
+### 2. Entrar na conta do GitHub
+
+```powershell
+gh auth login
+```
+
+Responda: **GitHub.com** → **HTTPS** → **Yes** (autenticar o Git com suas
+credenciais) → **Login with a web browser**. Entre com a conta **`miborim`**.
+
+### 3. Dizer ao Git quem é você
+
+Sem isso, o commit falha na hora de registrar a doação:
+
+```powershell
+git config --global user.name "Mirella Borim"
+git config --global user.email "miborim@users.noreply.github.com"
+```
+
+### 4. Baixar o projeto
+
+Escolha uma pasta **fora do OneDrive** (a sincronização pode corromper o
+histórico do Git) e **fora de Downloads** (pasta que costuma ser limpa):
+
+```powershell
+mkdir "$env:USERPROFILE\Projetos"
+cd "$env:USERPROFILE\Projetos"
+git clone https://github.com/miborim/vakinha.git
+cd vakinha
+```
+
+### 5. Criar o atalho na área de trabalho
+
+```powershell
+pwsh -File scripts/criar-atalho.ps1
+```
+
+### 6. Testar sem alterar nada
+
+```powershell
+pwsh -File scripts/atualizar-arrecadacao.ps1 -DryRun
+```
+
+Se aparecer o valor atual da campanha e a barra de progresso, está tudo certo.
+O modo teste não altera nada, não faz commit e não publica.
+
+### No computador antigo
+
+Apague o atalho antigo da área de trabalho, para não correr o risco de atualizar
+a vaquinha por duas pastas diferentes. O script avisa se isso acontecer, mas é
+mais simples evitar.
+
+> **Não copie o atalho de um computador para o outro**: ele guarda o caminho
+> exato da pasta antiga e não funcionaria. Sempre gere pelo passo 5.
+
+### Se quiser também mexer no site
+
+Só para registrar doações, os passos acima bastam. Para editar textos, imagens
+ou o visual, instale também o Node.js e baixe as dependências:
+
+```powershell
+winget install --id OpenJS.NodeJS.LTS -e
+npm install
+```
+
+---
+
 ## Desenvolvimento
 
 ```bash
