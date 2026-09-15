@@ -76,6 +76,9 @@ gh auth login
 Responda: **GitHub.com** → **HTTPS** → **Yes** (autenticar o Git com suas
 credenciais) → **Login with a web browser**. Entre com a conta **`miborim`**.
 
+Esse login é o que permite ao script publicar as doações — sem ele, o envio
+para o GitHub é recusado.
+
 ### 3. Dizer ao Git quem é você
 
 Sem isso, o commit falha na hora de registrar a doação:
@@ -86,8 +89,6 @@ git config --global user.email "miborim@users.noreply.github.com"
 ```
 
 ### 4. Baixar o projeto
-
-O repositório é **privado**, por isso o passo 2 (login) precisa vir antes deste.
 
 Escolha uma pasta **fora do OneDrive** (a sincronização pode corromper o
 histórico do Git) e **fora de Downloads** (pasta que costuma ser limpa):
