@@ -103,6 +103,27 @@ function Invoke-Git {
         $detalhe = ($saida | Out-String).Trim()
         $msg = if ($Explicacao) { $Explicacao } else { "Falha ao executar: git $($GitArgs -join ' ')" }
         if ($detalhe) { $msg += "`n`n  O git respondeu:`n    " + ($detalhe -replace "`r?`n", "`n    ") }
+
+        # Erro de TLS ao falar com o GitHub. A mensagem crua ("unexpected eof
+        # while reading") nao ajuda em nada, entao entregamos a solucao pronta.
+        if ($detalhe -match 'SSL routines|TLS connect error|unexpected eof while reading|schannel') {
+            $msg += @"
+
+
+  Isso e um problema de conexao segura com o GitHub, nao um erro seu.
+  Costuma ser antivirus, VPN ou rede corporativa interferindo.
+
+  Na maioria das vezes resolve rodar UMA vez, no PowerShell:
+
+      git config --global http.sslBackend schannel
+
+  Isso faz o git usar o sistema de seguranca do proprio Windows.
+  Depois e so abrir o atalho e tentar de novo.
+
+  Se nao resolver, tente outra rede (o 4G do celular, por exemplo).
+"@
+        }
+
         throw $msg
     }
     return $saida
