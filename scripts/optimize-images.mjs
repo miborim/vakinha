@@ -17,6 +17,12 @@ const MAX_WIDTH = {
   logos: 1000,
 };
 
+// Arquivos que já foram tratados à mão e não devem ser reprocessados.
+// A faixa do rodapé tem texto manuscrito e um carimbo com letras miúdas:
+// reduzir a largura deixa esses detalhes ilegíveis, então ela é gerada
+// separadamente a partir de assets-originais/footer/rodapé.png.
+const NAO_OTIMIZAR = new Set(["footer/footer-band.webp"]);
+
 const kb = (b) => (b / 1024).toFixed(1);
 
 async function walk(dir) {
@@ -39,6 +45,13 @@ async function run() {
     const rel = path.relative(PUBLIC, file);
     const folder = rel.split(path.sep)[0];
     const before = (await stat(file)).size;
+
+    if (NAO_OTIMIZAR.has(rel.split(path.sep).join("/"))) {
+      totalBefore += before;
+      totalAfter += before;
+      console.log(`skip  ${rel}  (${kb(before)} KB, tratada à mão)`);
+      continue;
+    }
 
     // SVG: apenas contabiliza, já é leve (vetorial).
     if (ext === ".svg") {
