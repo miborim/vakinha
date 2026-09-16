@@ -166,6 +166,32 @@ npm run lint
 Todo o conteúdo da campanha (meta, valor, PIX, contatos, data) fica em um único
 arquivo: `src/data/campaign.js`.
 
+### Fontes
+
+As fontes são **auto-hospedadas**: não há nenhuma conexão com
+`fonts.googleapis.com` ou `fonts.gstatic.com`. Isso deixa o carregamento mais
+rápido (duas conexões externas a menos) e evita expor o IP de quem visita a
+página a terceiros.
+
+Os arquivos ficam em `src/assets/fonts/` e as declarações `@font-face` em
+`src/fontes.css`, que é importado por `src/index.css`. **Nada disso é editado à
+mão**: rode o script se precisar trocar peso, estilo ou família.
+
+```bash
+node scripts/baixar-fontes.mjs
+```
+
+Ele baixa os `.woff2` do Google, gera o `src/fontes.css` e copia as três fontes
+usadas pela página de erro para `public/fonts/`. A `public/404.html` precisa de
+cópia própria porque não passa pelo Vite: é publicada do jeito que está, então
+não enxerga os arquivos com hash de `src/assets/`. Ao final o script imprime os
+`@font-face` a colar no `<style>` dela, caso a lista mude.
+
+São baixados só os subconjuntos `latin` e `latin-ext`. O `latin` (U+0000–00FF)
+já cobre todo o acentuado do português e do francês; o `latin-ext` entra como
+garantia e só é baixado se a página precisar. Na prática o navegador busca
+apenas os pesos que a página usa — hoje 6 dos 20 arquivos.
+
 ## Deploy
 
 Push na `main` dispara `.github/workflows/deploy.yml`, que roda o build e publica
@@ -178,10 +204,49 @@ partir da `develop`.
 
 Melhorias mapeadas na auditoria técnica que ainda não foram feitas:
 
-- [ ] **Auto-hospedar as fontes do Google.** Hoje Caveat, EB Garamond, Space Mono
-      e Special Elite vêm do `fonts.googleapis.com` (`index.html`). Baixar os
-      arquivos `.woff2`, servir do próprio domínio e declarar com `@font-face`
-      elimina ~169 KB de terceiros e duas conexões externas no carregamento.
-- [ ] **Submeter o sitemap no Google Search Console.** Verificar a propriedade do
-      site e enviar `https://miborim.github.io/vakinha/sitemap.xml` para acelerar
-      a indexação e acompanhar o desempenho nas buscas.
+- [ ] **Submeter o sitemap no Google Search Console.** Passo a passo na seção
+      abaixo. Só você pode fazer: exige login na conta Google.
+
+### Submeter o sitemap no Search Console
+
+O site já publica `robots.txt` e `sitemap.xml` sozinho — falta só avisar o
+Google. Isso acelera a indexação e mostra por quais buscas as pessoas chegam
+até a página.
+
+1. Acesse <https://search.google.com/search-console> e entre com sua conta
+   Google.
+2. Em **Adicionar propriedade**, escolha o tipo **Prefixo do URL** (não
+   "Domínio" — esse exige mexer no DNS, e o site está em `github.io`, que não
+   é seu).
+3. Informe exatamente, com a barra no final:
+
+   ```
+   https://miborim.github.io/vakinha/
+   ```
+
+4. Na verificação de propriedade, escolha **Tag HTML**. O Google mostra uma
+   linha parecida com:
+
+   ```html
+   <meta name="google-site-verification" content="ALGUMCODIGO" />
+   ```
+
+   Copie essa linha, cole dentro do `<head>` do `index.html` (na raiz do
+   repositório, logo abaixo das outras `<meta>`), publique com o fluxo normal
+   (`develop` → PR → merge) e espere o deploy terminar. Só então clique em
+   **Verificar**.
+
+   > Os outros métodos (arquivo HTML, DNS, Google Analytics) também funcionam,
+   > mas a tag é a mais simples aqui porque o `index.html` já é versionado.
+
+5. Com a propriedade verificada, abra **Sitemaps** no menu da esquerda, digite
+   `sitemap.xml` no campo e clique em **Enviar**.
+6. Em **Inspeção de URL**, cole `https://miborim.github.io/vakinha/` e peça
+   **Solicitar indexação**. Isso costuma adiantar bastante a primeira visita do
+   robô.
+
+A indexação não é imediata: pode levar de alguns dias a duas semanas. Depois
+disso, o relatório **Desempenho** mostra as buscas que trouxeram visitantes.
+
+> Não precisa repetir nada disso a cada atualização de valor. O `sitemap.xml`
+> é fixo, e o Google revisita a página sozinho.

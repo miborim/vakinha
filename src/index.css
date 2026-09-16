@@ -1,3 +1,7 @@
+/* Fontes do Google, auto-hospedadas (ver scripts/baixar-fontes.mjs).
+   O @import precisa vir antes de qualquer outra regra. */
+@import "./fontes.css";
+
 @font-face {
   font-family: "Bimbo";
   src: url("./assets/fonts/bimbo.woff2") format("woff2");
