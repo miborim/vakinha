@@ -240,15 +240,51 @@ até a página.
    > o site no ar, não o seu repositório.
 
 5. Com a propriedade verificada, abra **Sitemaps** no menu da esquerda, digite
-   `sitemap.xml` no campo e clique em **Enviar**.
+   apenas `sitemap.xml` no campo e clique em **Enviar**. O prefixo
+   `https://miborim.github.io/vakinha/` já aparece fixo em cinza à esquerda —
+   colar a URL inteira duplica o endereço e dá erro.
 6. Em **Inspeção de URL**, cole `https://miborim.github.io/vakinha/` e peça
    **Solicitar indexação**. Isso costuma adiantar bastante a primeira visita do
-   robô.
+   robô, e independe do sitemap.
 
 Se a verificação falhar na primeira tentativa, espere alguns minutos e tente de
 novo: costuma ser cache do GitHub Pages. Para conferir que a tag está mesmo no
 ar, abra o site, veja o código-fonte da página (`Ctrl+U`) e procure por
 `google-site-verification`.
+
+### "Não foi possível ler o sitemap"
+
+É comum aparecer logo depois de verificar a propriedade e **quase sempre se
+resolve sozinho**: o Google costuma tentar ler o sitemap antes de a verificação
+propagar internamente e registra essa primeira falha, mesmo com o arquivo no ar.
+
+Espere **24 horas** antes de se preocupar. Atualizar a página não força nada, e
+reenviar o sitemap várias vezes não acelera — só polui o relatório. Enquanto
+isso, use **Inspeção de URL → Solicitar indexação**, que é um caminho
+independente e mais rápido.
+
+Se passar de 24–48 h, aí vale checar o arquivo. Estes comandos cobrem as causas
+reais desse erro:
+
+```powershell
+# 1. Responde 200 para o robô do Google, sem redirecionar?
+$ua = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+$r = Invoke-WebRequest "https://miborim.github.io/vakinha/sitemap.xml" -UserAgent $ua -UseBasicParsing
+"$($r.StatusCode)  $($r.Headers['Content-Type'])"   # espera: 200  application/xml
+
+# 2. O XML e valido e a URL bate com a propriedade?
+[xml]$x = $r.Content; $x.urlset.url.loc                # espera: https://miborim.github.io/vakinha/
+
+# 3. Tem BOM no inicio do arquivo? (causa classica; deve comecar com 3C 3F 78)
+$b = [System.Text.Encoding]::UTF8.GetBytes($r.Content)
+($b[0..2] | ForEach-Object { '{0:X2}' -f $_ }) -join ' '
+```
+
+Atenção ao item 3: um BOM (`EF BB BF`) antes do `<?xml` quebra o leitor do
+Google. Ele aparece se alguém reescrever o `public/sitemap.xml` pelo PowerShell
+com `Set-Content -Encoding utf8` nas versões mais antigas. Se acontecer, grave o
+arquivo de novo como **UTF-8 sem BOM**.
+
 
 A indexação não é imediata: pode levar de alguns dias a duas semanas. Depois
 disso, o relatório **Desempenho** mostra as buscas que trouxeram visitantes.
