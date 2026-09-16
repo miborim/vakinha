@@ -23,6 +23,25 @@ Se algo der errado no meio do caminho (sem internet, branch fora de sincronia,
 push recusado), ele **avisa e desfaz** o que fez, em vez de dizer que deu certo
 sem ter publicado nada.
 
+### Se aparecer um erro de rede
+
+Erros de TLS/conexão (`TLS connect error`, `unable to access`) são instabilidade
+momentânea, não perda de dados. O script tenta de novo sozinho e, quando o envio
+já tinha dado certo, segue em frente em vez de abandonar no meio.
+
+Se mesmo assim a atualização não for ao ar, é só **abrir o atalho de novo**: ele
+detecta que existe um valor registrado fora do ar, mostra os dois valores e
+pergunta se você quer publicar — sem lançar a doação duas vezes.
+
+Se o erro se repetir sempre, vale testar uma vez:
+
+```powershell
+git config --global http.sslBackend schannel
+```
+
+Isso faz o Git usar o sistema de segurança do próprio Windows, o que costuma
+resolver conflitos com antivírus e redes corporativas.
+
 Para ver o que aconteceria, sem alterar nada:
 
 ```powershell

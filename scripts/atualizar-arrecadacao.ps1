@@ -429,6 +429,64 @@ try {
         if ($aFrente -gt 0) {
             Write-Host "  Aviso: existe(m) $aFrente commit(s) aqui que ainda nao foram enviados ao GitHub. Serao enviados junto." -ForegroundColor Yellow
         }
+
+        # --- Atualizacao registrada mas nao publicada ----------------------------
+        # Se a '$WorkBranch' ja tem um valor diferente da '$BaseBranch', existe uma
+        # atualizacao que foi registrada mas nunca foi ao ar (ex.: queda de rede no
+        # meio do processo). Sem este aviso, a proxima doacao seria somada em cima
+        # de um valor que o site ainda nao mostra, e ninguem perceberia.
+        $valorNaBase     = $null
+        $valorPendente   = $null
+        try {
+            Invoke-Git @("fetch", "origin", $BaseBranch, "--quiet") -Explicacao "Falha ao consultar a branch publicada."
+            $conteudoBase     = (& git show "origin/${BaseBranch}:src/data/campaign.js") -join "`n"
+            $conteudoTrabalho = (& git show "origin/${WorkBranch}:src/data/campaign.js") -join "`n"
+            $mBase = [regex]::Match($conteudoBase, "arrecadado:\s*([0-9]+(?:\.[0-9]+)?)")
+            $mTrab = [regex]::Match($conteudoTrabalho, "arrecadado:\s*([0-9]+(?:\.[0-9]+)?)")
+            if ($mBase.Success -and $mTrab.Success) {
+                $valorNaBase   = [double]$mBase.Groups[1].Value
+                $valorPendente = [double]$mTrab.Groups[1].Value
+            }
+        } catch { }
+
+        if ($null -ne $valorPendente -and $valorPendente -ne $valorNaBase) {
+            Write-Host ""
+            Write-Rule "Yellow"
+            Write-Host "  ATENCAO: existe uma atualizacao que ainda NAO esta no site." -ForegroundColor Yellow
+            Write-Rule "Yellow"
+            Write-Host ("  Ja registrado (mas fora do ar): " + (Format-BRL $valorPendente)) -ForegroundColor Yellow
+            Write-Host ("  O site ainda mostra:             " + (Format-BRL $valorNaBase)) -ForegroundColor Yellow
+            Write-Host ""
+            Write-Host "  Isso costuma acontecer quando a internet cai no meio de uma atualizacao." -ForegroundColor DarkGray
+            Write-Host "  Se voce ja tinha lancado essa doacao, NAO lance de novo: e so publicar." -ForegroundColor DarkGray
+            Write-Host ""
+
+            if (Read-YesNo "Deseja publicar essa atualizacao agora?" $true) {
+                $prPendente = gh pr list --base $BaseBranch --head $WorkBranch --state open --json url --jq ".[0].url" 2>$null
+                if (-not $prPendente -or "$prPendente".Trim() -eq "") {
+                    $prPendente = gh pr create --base $BaseBranch --head $WorkBranch `
+                        --title ("Atualiza arrecadacao: " + (Format-BRL $valorPendente)) `
+                        --body "Publicacao de uma atualizacao que ficou registrada sem ir ao ar." 2>&1 | Select-Object -Last 1
+                }
+                if ("$prPendente" -match "^https://") {
+                    $prPendente = "$prPendente".Trim()
+                    gh pr merge $prPendente --merge 2>&1 | Out-Null
+                    if ($LASTEXITCODE -ne 0) { gh pr merge $prPendente --merge --admin 2>&1 | Out-Null }
+                }
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host ""
+                    Write-Host "  Publicado. O site atualiza em cerca de um minuto." -ForegroundColor Green
+                } else {
+                    Write-Host ""
+                    Write-Host "  Nao consegui publicar automaticamente. Abra:" -ForegroundColor Red
+                    Write-Host "  https://github.com/miborim/vakinha/compare/$BaseBranch...$WorkBranch" -ForegroundColor Red
+                }
+                Write-Host ""
+                if (-not (Read-YesNo "Quer continuar e registrar uma NOVA doacao agora?" $false)) {
+                    throw [System.Exception]::new("CANCELLED")
+                }
+            }
+        }
     }
 
     # --- Le estado atual da campanha --------------------------------------------
@@ -550,16 +608,40 @@ try {
             throw
         }
 
-        # Confirma que o commit realmente chegou ao GitHub.
-        Invoke-Git @("fetch", "origin", $WorkBranch, "--quiet") -Explicacao "Nao consegui confirmar o envio."
-        $localSha  = (& git rev-parse $WorkBranch).Trim()
-        $remotoSha = (& git rev-parse "origin/$WorkBranch").Trim()
-        if ($localSha -ne $remotoSha) {
-            throw "O envio nao foi confirmado pelo GitHub. Nada foi publicado; tente novamente."
+        # Confirma que o commit realmente chegou ao GitHub. Como o push ja deu
+        # certo, uma falha aqui costuma ser instabilidade de rede, e nao perda de
+        # dados: tentamos algumas vezes e, se ainda assim nao der, seguimos em
+        # frente avisando -- abortar aqui deixaria a doacao publicada pela metade
+        # (enviada, mas sem Pull Request), que foi exatamente o que ja aconteceu.
+        $envioConfirmado = $false
+        $ultimoErroFetch = $null
+        foreach ($tentativa in 1..3) {
+            try {
+                Invoke-Git @("fetch", "origin", $WorkBranch, "--quiet") -Explicacao "Falha ao consultar o GitHub."
+                $localSha  = (& git rev-parse $WorkBranch).Trim()
+                $remotoSha = (& git rev-parse "origin/$WorkBranch").Trim()
+                if ($localSha -eq $remotoSha) { $envioConfirmado = $true }
+                break
+            }
+            catch {
+                $ultimoErroFetch = $_.Exception.Message
+                if ($tentativa -lt 3) {
+                    Write-Host ("  Instabilidade de rede ao conferir o envio; tentando de novo ($tentativa/3)...") -ForegroundColor DarkGray
+                    Start-Sleep -Seconds (3 * $tentativa)
+                }
+            }
         }
 
         Write-Host ""
-        Write-Host "Alteracoes enviadas e confirmadas na branch '$WorkBranch'." -ForegroundColor Green
+        if ($envioConfirmado) {
+            Write-Host "Alteracoes enviadas e confirmadas na branch '$WorkBranch'." -ForegroundColor Green
+        } elseif ($ultimoErroFetch) {
+            Write-Host "Alteracoes enviadas ao GitHub, mas nao consegui CONFERIR por instabilidade de rede." -ForegroundColor Yellow
+            Write-Host "O envio provavelmente deu certo. Vou seguir e abrir o Pull Request." -ForegroundColor Yellow
+        } else {
+            throw ("O GitHub respondeu, mas a branch '$WorkBranch' de la nao tem o seu commit.`n" +
+                   "  Rode o atalho de novo para reenviar.")
+        }
 
         Write-Host "Verificando Pull Request existente..." -ForegroundColor Cyan
         $existingPr = gh pr list --base $BaseBranch --head $WorkBranch --state open --json url --jq ".[0].url" 2>$null
