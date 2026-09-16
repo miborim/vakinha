@@ -75,6 +75,9 @@ Alguns detalhes que fiz questão de cuidar:
   SEO** no Lighthouse.
 - **Uma fonte única de verdade.** Meta, valor arrecadado, PIX e contatos ficam
   todos em `src/data/campaign.js`.
+- **Nenhum rastreador de terceiros.** O site não tem analytics, e as fontes são
+  servidas do próprio domínio em vez de virem do Google — ou seja, visitar a
+  página não entrega o seu IP para ninguém além do GitHub Pages.
 - **Publicação automática.** Todo commit na `main` dispara o build e o deploy
   pelo GitHub Actions.
 

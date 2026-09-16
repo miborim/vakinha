@@ -1,14 +1,9 @@
 // Dados centrais da campanha — edite aqui para atualizar o site
 export const campaign = {
-  nome: "Mirella Borim Lima",
-  destino: "ECE — École d'ingénieurs, Paris",
-  curso: "Master em AI for Business Transformation",
+  nome: "Mirella Borim Lima", // usado no JSON-LD gerado por scripts/prerender.mjs
   meta: 18000, // R$
   arrecadado: 8856.98, // R$ — atualize conforme as doações chegarem
   atualizadoEm: "16/09/2026, às 11h08", // data da última atualização do valor arrecadado
-  moeda: "BRL",
-  // Link de doação (ex: vaquinha, PIX, etc.) — adicione quando tiver
-  linkDoacao: "#doar",
   pix: "mirellaborimlima@gmail.com", // chave PIX (e-mail) — ajuste se necessário
   contato: {
     email: "mirellaborimlima@gmail.com",
@@ -19,15 +14,11 @@ export const campaign = {
   },
 };
 
-// Custos que a vaquinha cobre (a faculdade cobre os estudos)
-export const custos = [
-  { icone: "🏠", titulo: "Moradia", texto: "Aluguel em Paris durante o período do mestrado." },
-  { icone: "🍽️", titulo: "Alimentação", texto: "Custo de vida no dia a dia na França." },
-  { icone: "✈️", titulo: "Passagem", texto: "Voos de ida e volta Brasil–França." },
-  { icone: "🛡️", titulo: "Seguro", texto: "Seguro saúde e de vida exigidos para o intercâmbio." },
-];
-
-// Marcos da trajetória (do currículo)
+// Linha do tempo em texto corrido — NÃO é renderizada pelo site.
+// A versão exibida fica em src/components/Historia.jsx (array `entradas`),
+// em formato visual (logo + data + uma linha). Este texto mais longo é
+// mantido como material de apoio para bio, posts e mensagens de divulgação.
+// Ao atualizar um marco, atualize nos dois lugares.
 export const trajetoria = [
   {
     periodo: "2024 – 2027",
@@ -66,15 +57,15 @@ export const trajetoria = [
       "Consultoria de negócios: apoiei a construção de um roadmap estratégico de IA para uma grande fintech brasileira, mapeando mais de 3.000 startups e 206 aplicações de IA.",
   },
   {
-    periodo: "Mar 2026 – hoje",
+    periodo: "Mar – Set 2026",
     titulo: "Estágio na Microsoft",
     texto:
       "Customer Success no segmento Major Growth: conecto necessidades de negócio a soluções digitais e acompanho métricas de adoção junto a times técnicos e comerciais.",
   },
   {
-    periodo: "2026",
+    periodo: "Out – Dez 2026",
     titulo: "Aprovada em Paris 🇫🇷",
     texto:
-      "Aprovada na ECE Paris para o mestrado em AI for Business Transformation. O próximo passo de uma jornada construída com estudo e apoio.",
+      'Aprovada na ECE Paris para o intercâmbio em "AI for Business Transformation". O próximo passo de uma jornada construída com estudo e apoio.',
   },
 ];
