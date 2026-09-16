@@ -1,170 +1,109 @@
-# Mirella na França — site da campanha
+# Mirella na França 🇫🇷
 
-Site da vaquinha para custear o intercâmbio na **ECE Paris**.
+Site da campanha que criei para me ajudar a viver meu intercâmbio em Paris.
 
-- **No ar:** https://miborim.github.io/vakinha/
-- **Stack:** React 19 + Vite 8, com pré-renderização (o HTML já sai pronto do build)
-
----
-
-## Atualizar o valor arrecadado
-
-Esse é o único fluxo que precisa ser usado no dia a dia.
-
-```powershell
-pwsh -File scripts/atualizar-arrecadacao.ps1
-```
-
-O script cuida de tudo: mostra o progresso atual, pergunta quanto adicionar
-(dá para lançar vários valores e editar antes de confirmar), atualiza
-`src/data/campaign.js`, faz commit e push na `develop`, abre o Pull Request para
-a `main` e — se você quiser — aprova o PR, acompanha a publicação e confirma que
-o site já está mostrando o valor novo.
-
-Se algo der errado no meio do caminho (sem internet, branch fora de sincronia,
-push recusado), ele **avisa e desfaz** o que fez, em vez de dizer que deu certo
-sem ter publicado nada.
-
-Para ver o que aconteceria, sem alterar nada:
-
-```powershell
-pwsh -File scripts/atualizar-arrecadacao.ps1 -DryRun
-```
-
-Requisitos: [Git](https://git-scm.com), [GitHub CLI](https://cli.github.com)
-autenticado e PowerShell 7+.
-
-### Atalho na área de trabalho
-
-Para não precisar do terminal, crie um atalho com ícone do site:
-
-```powershell
-pwsh -File scripts/criar-atalho.ps1
-```
-
-Depois é só dar dois cliques em **"Atualizar arrecadacao"** na área de trabalho.
-Rode o comando de novo se a pasta do projeto mudar de lugar.
+**👉 [miborim.github.io/vakinha](https://miborim.github.io/vakinha/)**
 
 ---
 
-## Configurar em um computador novo
+## Sobre o intercâmbio
 
-Passo a passo para deixar a atualização da vaquinha funcionando em outra máquina.
-**Não é preciso copiar nada pelo pendrive ou pela rede** — está tudo no GitHub, e
-o que falta é gerado na hora.
+Conhecer a França sempre foi um sonho, e é um privilégio que a minha primeira
+oportunidade de viajar para fora seja por meio dos estudos. Vou passar um
+semestre tendo aulas de **"Artificial Intelligence for Business Transformation"**
+na [ECE Paris](https://www.ece.fr/en/) — École d'ingénieurs.
 
-### 1. Instalar os três programas
+A faculdade cobre os custos dos estudos, mas os gastos pessoais ficam por minha
+conta: moradia, alimentação, transporte, chip de celular e seguro saúde. As
+passagens eu já paguei. É aí que entra esta campanha.
 
-Abra o **Terminal do Windows** (ou o Prompt de Comando) e cole:
+No orçamento eu não incluí gastos com lazer ou viagens pessoais, só o necessário
+para os estudos mesmo. A partir desses valores, calculei quanto ainda preciso
+complementar do que já tenho guardado, além de uma reserva de emergência para os
+imprevistos. Está tudo aberto no site, categoria por categoria.
 
-```powershell
-winget install --id Microsoft.PowerShell -e
-winget install --id Git.Git -e
-winget install --id GitHub.cli -e
-```
+## Por que eu fiz um site em vez de usar uma vaquinha pronta
 
-Depois **feche e abra o terminal de novo**, para que ele reconheça os comandos
-recém-instalados. A partir daqui, use o **PowerShell 7** (procure por "PowerShell 7"
-no menu Iniciar).
+Essa é a pergunta que mais me fizeram, e a resposta é simples:
 
-### 2. Entrar na conta do GitHub
+> Fazer um site próprio foi a minha alternativa para evitar as taxas (abusivas)
+> das plataformas de arrecadação.
 
-```powershell
-gh auth login
-```
+As plataformas de arrecadação ficam com uma parte do que as pessoas doam. Como
+cada real aqui faz diferença, preferi receber as doações direto por **PIX**, em
+uma conta usada só para a campanha, e atualizar os valores manualmente no site.
 
-Responda: **GitHub.com** → **HTTPS** → **Yes** (autenticar o Git com suas
-credenciais) → **Login with a web browser**. Entre com a conta **`miborim`**.
+Isso também me deu espaço para explicar a história inteira do meu jeito: de onde
+eu venho, como cheguei até aqui e exatamente para onde vai cada valor — em vez de
+caber num formulário padrão.
 
-Esse login é o que permite ao script publicar as doações — sem ele, o envio
-para o GitHub é recusado.
+E, sendo sincera: eu estudo tecnologia. Fazia todo sentido que o meu pedido de
+ajuda fosse também algo que eu construísse com as minhas próprias mãos.
 
-### 3. Dizer ao Git quem é você
+## O que tem no site
 
-Sem isso, o commit falha na hora de registrar a doação:
-
-```powershell
-git config --global user.name "Mirella Borim"
-git config --global user.email "miborim@users.noreply.github.com"
-```
-
-### 4. Baixar o projeto
-
-Escolha uma pasta **fora do OneDrive** (a sincronização pode corromper o
-histórico do Git) e **fora de Downloads** (pasta que costuma ser limpa):
-
-```powershell
-mkdir "$env:USERPROFILE\Projetos"
-cd "$env:USERPROFILE\Projetos"
-gh repo clone miborim/vakinha
-cd vakinha
-```
-
-### 5. Criar o atalho na área de trabalho
-
-```powershell
-pwsh -File scripts/criar-atalho.ps1
-```
-
-### 6. Testar sem alterar nada
-
-```powershell
-pwsh -File scripts/atualizar-arrecadacao.ps1 -DryRun
-```
-
-Se aparecer o valor atual da campanha e a barra de progresso, está tudo certo.
-O modo teste não altera nada, não faz commit e não publica.
-
-### No computador antigo
-
-Apague o atalho antigo da área de trabalho, para não correr o risco de atualizar
-a vaquinha por duas pastas diferentes. O script avisa se isso acontecer, mas é
-mais simples evitar.
-
-> **Não copie o atalho de um computador para o outro**: ele guarda o caminho
-> exato da pasta antiga e não funcionaria. Sempre gere pelo passo 5.
-
-### Se quiser também mexer no site
-
-Só para registrar doações, os passos acima bastam. Para editar textos, imagens
-ou o visual, instale também o Node.js e baixe as dependências:
-
-```powershell
-winget install --id OpenJS.NodeJS.LTS -e
-npm install
-```
+- **Minha história** — a trajetória que me trouxe até aqui, do Inteli aos
+  estágios, até a aprovação em Paris
+- **Sobre o intercâmbio** — o orçamento aberto, categoria por categoria, com os
+  valores em euro e em real
+- **Galeria** — fotos da faculdade, dos estágios, da família e dos amigos
+- **Formas de ajudar** — a chave PIX e outras maneiras de apoiar, incluindo
+  simplesmente compartilhar
+- **Perguntas frequentes** — para quem quer entender melhor antes de doar
 
 ---
 
-## Desenvolvimento
+## Como o site foi feito
+
+Um site estático em **React 19 + Vite**, publicado no **GitHub Pages**.
+
+O visual é inteiramente autoral, inspirado em scrapbook e em cartas de viagem:
+papéis rasgados, fitas adesivas, polaroids e stickers, montados à mão sobre
+texturas de papel. As fotos e ilustrações originais ficam em `assets-originais/`
+e são otimizadas para WebP antes de ir para o ar.
+
+Alguns detalhes que fiz questão de cuidar:
+
+- **Pré-renderização (SSG).** Um app React normalmente entrega uma página vazia
+  para quem não executa JavaScript — e é justamente esse o caso do Google, dos
+  bots de IA e do gerador de preview de link do WhatsApp e do Instagram. Um
+  script roda depois do build e injeta o HTML já pronto, então o conteúdo aparece
+  para todo mundo. O React continua assumindo a página no navegador, e toda a
+  interatividade segue igual.
+- **Acessibilidade.** Contraste, navegação por teclado, textos alternativos e
+  estrutura semântica. O site tira **100 em acessibilidade, boas práticas e
+  SEO** no Lighthouse.
+- **Uma fonte única de verdade.** Meta, valor arrecadado, PIX e contatos ficam
+  todos em `src/data/campaign.js`.
+- **Publicação automática.** Todo commit na `main` dispara o build e o deploy
+  pelo GitHub Actions.
+
+### Rodando localmente
 
 ```bash
 npm install
-npm run dev      # servidor local
-npm run build    # build de produção + pré-renderização
-npm run preview  # confere o build final
-npm run lint
+npm run dev
 ```
 
-Todo o conteúdo da campanha (meta, valor, PIX, contatos, data) fica em um único
-arquivo: `src/data/campaign.js`.
+### Estrutura
 
-## Deploy
-
-Push na `main` dispara `.github/workflows/deploy.yml`, que roda o build e publica
-no GitHub Pages. A `main` é protegida: as alterações entram por Pull Request a
-partir da `develop`.
+```
+src/
+  components/      seções da página (Hero, História, Sobre, Galeria, Doar…)
+  data/            campaign.js (dados da campanha) e faq.js
+  assets/          imagens otimizadas usadas no site
+scripts/           build, pré-renderização e otimização de imagens
+assets-originais/  arquivos originais das imagens
+```
 
 ---
 
-## Próximos passos
+## Obrigada 💛
 
-Melhorias mapeadas na auditoria técnica que ainda não foram feitas:
+Se você chegou até aqui, obrigada de verdade. Compartilhar o site também é uma
+forma enorme de ajudar.
 
-- [ ] **Auto-hospedar as fontes do Google.** Hoje Caveat, EB Garamond, Space Mono
-      e Special Elite vêm do `fonts.googleapis.com` (`index.html`). Baixar os
-      arquivos `.woff2`, servir do próprio domínio e declarar com `@font-face`
-      elimina ~169 KB de terceiros e duas conexões externas no carregamento.
-- [ ] **Submeter o sitemap no Google Search Console.** Verificar a propriedade do
-      site e enviar `https://miborim.github.io/vakinha/sitemap.xml` para acelerar
-      a indexação e acompanhar o desempenho nas buscas.
+**Mirella Borim**
+[Instagram](https://instagram.com/bonjourmimie) ·
+[LinkedIn](https://www.linkedin.com/in/mirellaborim) ·
+mirellaborimlima@gmail.com
