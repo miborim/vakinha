@@ -204,8 +204,10 @@ partir da `develop`.
 
 Melhorias mapeadas na auditoria técnica que ainda não foram feitas:
 
-- [ ] **Submeter o sitemap no Google Search Console.** Passo a passo na seção
-      abaixo. Só você pode fazer: exige login na conta Google.
+- [ ] **Submeter o sitemap no Google Search Console.** A meta tag de verificação
+      já está publicada; falta clicar em **Verificar** e enviar o sitemap.
+      Passo a passo na seção abaixo. Só você pode fazer: exige login na conta
+      Google.
 
 ### Submeter o sitemap no Search Console
 
@@ -224,26 +226,29 @@ até a página.
    https://miborim.github.io/vakinha/
    ```
 
-4. Na verificação de propriedade, escolha **Tag HTML**. O Google mostra uma
-   linha parecida com:
+4. Na verificação de propriedade, escolha **Tag HTML**.
 
-   ```html
-   <meta name="google-site-verification" content="ALGUMCODIGO" />
-   ```
-
-   Copie essa linha, cole dentro do `<head>` do `index.html` (na raiz do
-   repositório, logo abaixo das outras `<meta>`), publique com o fluxo normal
-   (`develop` → PR → merge) e espere o deploy terminar. Só então clique em
-   **Verificar**.
-
-   > Os outros métodos (arquivo HTML, DNS, Google Analytics) também funcionam,
-   > mas a tag é a mais simples aqui porque o `index.html` já é versionado.
+   > **A tag já está publicada.** O `index.html` já traz a
+   > `<meta name="google-site-verification" ...>`, então é só clicar em
+   > **Verificar** direto. **Não apague essa linha**: é ela que mantém o acesso
+   > ao relatório de buscas.
+   >
+   > Só refaça este passo se o Google gerar um código novo (ao remover e
+   > readicionar a propriedade, por exemplo). Nesse caso, troque o `content=`
+   > da meta existente, publique pelo fluxo normal (`develop` → PR → merge),
+   > espere o deploy terminar e **só então** clique em Verificar — o Google lê
+   > o site no ar, não o seu repositório.
 
 5. Com a propriedade verificada, abra **Sitemaps** no menu da esquerda, digite
    `sitemap.xml` no campo e clique em **Enviar**.
 6. Em **Inspeção de URL**, cole `https://miborim.github.io/vakinha/` e peça
    **Solicitar indexação**. Isso costuma adiantar bastante a primeira visita do
    robô.
+
+Se a verificação falhar na primeira tentativa, espere alguns minutos e tente de
+novo: costuma ser cache do GitHub Pages. Para conferir que a tag está mesmo no
+ar, abra o site, veja o código-fonte da página (`Ctrl+U`) e procure por
+`google-site-verification`.
 
 A indexação não é imediata: pode levar de alguns dias a duas semanas. Depois
 disso, o relatório **Desempenho** mostra as buscas que trouxeram visitantes.
