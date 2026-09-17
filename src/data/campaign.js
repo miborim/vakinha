@@ -2,8 +2,8 @@
 export const campaign = {
   nome: "Mirella Borim Lima", // usado no JSON-LD gerado por scripts/prerender.mjs
   meta: 18000, // R$
-  arrecadado: 9606.98, // R$ — atualize conforme as doações chegarem
-  atualizadoEm: "17/09/2026, às 16h04", // data da última atualização do valor arrecadado
+  arrecadado: 9656.98, // R$ — atualize conforme as doações chegarem
+  atualizadoEm: "17/09/2026, às 16h12", // data da última atualização do valor arrecadado
   pix: "mirellaborimlima@gmail.com", // chave PIX (e-mail) — ajuste se necessário
   contato: {
     email: "mirellaborimlima@gmail.com",
